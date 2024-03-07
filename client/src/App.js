@@ -1,7 +1,6 @@
 import "./App.css";
-import { useState, useEffect } from "react";
-import API from "./config/api";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import API from "./api/api";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Header from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";

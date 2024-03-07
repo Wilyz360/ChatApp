@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API from "../config/api";
+import API from "../api/api";
 
 const Search = () => {
   const [email, setEmail] = useState("");

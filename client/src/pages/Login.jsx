@@ -1,7 +1,7 @@
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import API from "../config/api";
+import API from "../api/api";
 
 const Login = () => {
   // input fields
@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const result = await API.post(
-        "/v1/login",
+        "/login",
         {
           email,
           password,
@@ -30,6 +30,7 @@ const Login = () => {
         setPassword("");
         navigate("/dashboard");
       } else {
+        console.log(result.data.message);
         window.alert(result.data.message);
       }
     } catch (error) {
@@ -46,7 +47,7 @@ const Login = () => {
               <h5>Log in to MSG</h5>
             </div>
             <Form.Group className="m-3">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
                 type="text"
                 name="Email"

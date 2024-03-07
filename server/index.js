@@ -9,7 +9,7 @@ require("./database/database").connect();
 // import routes
 const signupRoute = require("./routers/signupRoute");
 const loginRoute = require("./routers/loginRoute");
-const verifyRoute = require("./routers/verify");
+const authRoute = require("./routers/authRoute");
 const userRoute = require("./routers/userRoute");
 
 const app = express();
@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/v1/signup", signupRoute);
 app.use("/v1/login", loginRoute);
 app.use("/v1/user", userRoute);
-app.use("/v1/verify", verifyRoute);
+app.use("/v1/auth", authRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API from "../config/api";
+import API from "../api/api";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const result = await API.post("/v1/signup", {
+      const result = await API.post("/signup", {
         firstname,
         lastname,
         email,
