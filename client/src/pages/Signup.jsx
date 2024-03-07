@@ -58,10 +58,10 @@ const Signup = () => {
                 value={lastname}
                 onChange={(e) => setLastname(e.target.value)}
               />
-              <Form.Label className="mt-3">Username</Form.Label>
+              <Form.Label className="mt-3">Email</Form.Label>
               <Form.Control
                 type="username"
-                placeholder="Enter username"
+                placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

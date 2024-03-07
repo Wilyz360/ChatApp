@@ -1,19 +1,22 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
+require("dotenv").config(); // now you can use process.env in any document since this is the root file
+
+// Connect to DB
+require("./database/database").connect();
 
 // import routes
-const signupRouter = require("./routers/signup");
-const loginRouter = require("./routers/login");
-const searchRouter = require("./routers/search");
-const verifyRouter = require("./routers/verify");
+const signupRoute = require("./routers/signupRoute");
+const loginRoute = require("./routers/loginRoute");
+const verifyRoute = require("./routers/verify");
+const userRoute = require("./routers/userRoute");
 
 const app = express();
 const PORT = 4000;
 
 app.get("/", (req, res) => {
-  res.send("Auth API");
+  res.send("Chat API");
 });
 
 // Set up middleware
@@ -32,10 +35,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // make routes avalible
-app.use("/v1/signup", signupRouter);
-app.use("/v1/login", loginRouter);
-app.use("/v1/search", searchRouter);
-app.use("/v1/verify", verifyRouter);
+app.use("/v1/signup", signupRoute);
+app.use("/v1/login", loginRoute);
+app.use("/v1/user", userRoute);
+app.use("/v1/verify", verifyRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);

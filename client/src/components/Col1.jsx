@@ -1,10 +1,12 @@
 import { useState } from "react";
 import Col2 from "./Col2";
+import Col3 from "./Col3";
 
 import ekko from "../images/ekko.jpg";
 
 const Col_1 = () => {
   const [show, setShow] = useState("");
+
   return (
     <>
       <div className="col-2 border-end menu">
@@ -32,6 +34,7 @@ const Col_1 = () => {
         </div>
       </div>
       <Col2 show={show} />
+      <Col3 show={show} />
     </>
   );
 };
