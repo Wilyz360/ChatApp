@@ -11,6 +11,7 @@ const signupRoute = require("./routers/signupRoute");
 const loginRoute = require("./routers/loginRoute");
 const authRoute = require("./routers/authRoute");
 const userRoute = require("./routers/userRoute");
+const logoutRoute = require("./routers/logoutRoute");
 
 const app = express();
 const PORT = 4000;
@@ -39,6 +40,7 @@ app.use("/v1/signup", signupRoute);
 app.use("/v1/login", loginRoute);
 app.use("/v1/user", userRoute);
 app.use("/v1/auth", authRoute);
+app.use("/v1/logout", logoutRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);

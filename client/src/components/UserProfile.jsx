@@ -2,8 +2,11 @@ import React from "react";
 import tree from "../images/tree.jpeg";
 import { Image, Button } from "react-bootstrap";
 
-function UserProfile(props) {
-  const { firstname, lastname, email, age, gender, location } = props;
+const main_user = JSON.parse(localStorage.getItem("profile"));
+
+function UserProfile({ user }) {
+  console.log(user);
+  const { _id, firstname, lastname, email, age, gender, isContact } = user;
   return (
     <div>
       <h1>
@@ -23,17 +26,18 @@ function UserProfile(props) {
           <br />
           Age: {age} <br />
           Gender: {gender} <br />
-          Location: {location}
         </p>
       </div>
-      <div>
-        <Button
-          className="d-flex mx-auto align-items-center justify-content-center"
-          variant="dark"
-        >
-          Add
-        </Button>
-      </div>
+      {!isContact && _id !== main_user._id ? (
+        <div>
+          <Button
+            className="d-flex mx-auto align-items-center justify-content-center"
+            variant="dark"
+          >
+            Add
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

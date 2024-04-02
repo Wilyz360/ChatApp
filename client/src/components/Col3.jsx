@@ -1,12 +1,21 @@
-import React from "react";
 import Profile from "./Profile";
+import UserProfile from "./UserProfile";
+import Settings from "./Settings";
 
-const Col3 = ({ show }) => {
+const main_user = JSON.parse(localStorage.getItem("profile"));
+
+const Col3 = ({ show, userState }) => {
   return (
     <>
       <div className="col-6 col_3">
         {show === "profile" ? (
-          <Profile />
+          <UserProfile user={main_user} />
+        ) : show === "searchUser" ? (
+          <div>
+            <UserProfile user={userState} />
+          </div>
+        ) : show === "settings" ? (
+          <Settings />
         ) : (
           <div>
             <div className="border-bottom">

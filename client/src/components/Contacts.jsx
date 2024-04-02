@@ -1,14 +1,29 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import API from "../api/api";
+
+const user = JSON.parse(localStorage.getItem("profile"));
 
 function Contacts() {
+  const [contacts, setContacts] = useState([]);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const { data: result } = await API.get(`/user/${user._id}/contacts`);
+
+        setContacts(...contacts, result);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchContacts();
+  });
+
   return (
     <div>
-      <div>Mateo</div>
-      <div>John</div>
-      <div>Cersi</div>
-      <div>Lesly</div>
-      <div>Gezy</div>
-      <div>Juan</div>
+      {contacts.map((e) => {
+        return <div>{e.firstname}</div>;
+      })}
     </div>
   );
 }

@@ -1,10 +1,12 @@
-import React from "react";
-
-const Profile = () => {
+const Profile = ({ user }) => {
+  console.log(user);
   return (
     <>
       <div>
-        <h1>Profile</h1>
+        <h1>
+          {user.firstname} {user.lastname}
+        </h1>
+        <p>{user.email}</p>
       </div>
     </>
   );

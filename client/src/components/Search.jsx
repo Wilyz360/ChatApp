@@ -1,24 +1,24 @@
 import { useState } from "react";
 import API from "../api/api";
 
-const Search = () => {
+const user = JSON.parse(localStorage.getItem("profile"));
+
+const Search = ({ handleSearchUser, setShow }) => {
   const [email, setEmail] = useState("");
-  const [user, setUser] = useState({});
 
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
       // sending email as query. params == query
-      const result = await API.get("/v1/search", {
-        // indicates whether or not cross-site Access-Control requests should be
-        // made using credentials such as cookies
-        withCredentials: true,
-        params: { email },
+      console.log(user);
+      const result = await API.get(`/user/${email}/search`, {
+        params: { user },
       });
 
       if (result.data.accepted === true) {
         console.log(result.data.message);
-        setUser(result.data.user);
+        handleSearchUser(result.data.user);
+        setShow("searchUser");
       } else {
         console.log(result.data.message);
         window.alert(result.data.message);
@@ -27,6 +27,7 @@ const Search = () => {
       console.error(error);
     }
   };
+
   return (
     <div className="p-2 mt-2 mb-4 border-bottom">
       <form className="d-flex">

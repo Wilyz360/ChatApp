@@ -17,6 +17,17 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  age: {
+    type: Number,
+    default: null,
+  },
+  gender: {
+    type: String,
+    default: null,
+  },
+  contact: {
+    type: [],
+  },
 });
 
 const userModel = mongoose.model("user", userSchema);
