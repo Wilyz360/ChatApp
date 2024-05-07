@@ -2,11 +2,17 @@ import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import API from "../api/api";
-import Col1 from "../components/Col1";
+import Header from "../components/Header";
+import RightColumn from "../components/RightColumn";
+import MiddleColumn from "../components/MiddleColumn";
+import LeftColumn from "../components/LeftColumn";
 
 const DashBoard = () => {
-  const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  const [show, setShow] = useState(false);
+  const [searchedUser, setSearchedUser] = useState({});
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -44,8 +50,15 @@ const DashBoard = () => {
 
   return (
     <div className="container">
+      <Header />
       <div className="row">
-        <Col1 />
+        <RightColumn setShow={setShow} />
+        <MiddleColumn
+          setShow={setShow}
+          show={show}
+          setSearchedUser={setSearchedUser}
+        />
+        <LeftColumn show={show} searchedUser={searchedUser} />
       </div>
     </div>
   );

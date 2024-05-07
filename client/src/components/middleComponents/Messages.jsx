@@ -1,6 +1,6 @@
 import React from "react";
 
-function Messages() {
+const Messages = () => {
   return (
     <>
       <div>
@@ -17,6 +17,6 @@ function Messages() {
       </div>
     </>
   );
-}
+};
 
 export default Messages;

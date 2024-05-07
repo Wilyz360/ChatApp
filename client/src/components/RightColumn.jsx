@@ -1,29 +1,7 @@
-import { useState, useReducer } from "react";
-import Col2 from "./Col2";
-import Col3 from "./Col3";
-
+import { useState } from "react";
 import ekko from "../images/ekko.jpg";
 
-const initalState = { userProfile: null };
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "SET_USER_PROFILE":
-      return { userProfile: action.payload };
-    default:
-      return state;
-  }
-};
-
-const Col_1 = () => {
-  const [show, setShow] = useState("messages");
-
-  const [state, dispatch] = useReducer(reducer, initalState);
-
-  const handleSearchUser = (userSearched) => {
-    dispatch({ type: "SET_USER_PROFILE", payload: userSearched });
-  };
-
+const RightColumn = ({ setShow }) => {
   return (
     <>
       <div className="col-2 border-end menu">
@@ -50,10 +28,8 @@ const Col_1 = () => {
           </div>
         </div>
       </div>
-      <Col2 show={show} handleSearchUser={handleSearchUser} setShow={setShow} />
-      <Col3 show={show} userState={state.userProfile} />
     </>
   );
 };
 
-export default Col_1;
+export default RightColumn;

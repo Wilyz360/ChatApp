@@ -37,13 +37,15 @@ router.post("/", async (req, res) => {
             { expiresIn: "1h" }
           );
 
-          user.password = undefined;
+          // exclude password
+          const { password, ...otherDetails } = user._doc;
 
           console.log(user, "Login succesfully!");
-          res
-            .status(200)
-            .cookie("token", token, { httpOnly: true })
-            .json({ accepted: true, message: "Login succesfully!", user });
+          res.status(200).cookie("token", token, { httpOnly: true }).json({
+            accepted: true,
+            message: "Login succesfully!",
+            user: otherDetails,
+          });
         }
       } else {
         console.log("User not found");

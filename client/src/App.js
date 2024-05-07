@@ -1,7 +1,6 @@
 import "./App.css";
 import API from "./api/api";
 import { Route, Routes, Navigate } from "react-router-dom";
-import Header from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -10,7 +9,6 @@ import DashBoard from "./pages/Dashboard";
 function App() {
   return (
     <div className="App">
-      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

@@ -23,40 +23,20 @@ router.get("/", async (req, res) => {
 // =====> Get user by email
 router.get("/:email/search", async (req, res) => {
   const email = req.params.email;
-  const { _id } = req.query.user;
-  console.log("email: ", email, "id: ", _id);
+  console.log("email: ", email);
 
   try {
     // ===> find user by email
-    const email_user = await UserModel.findOne({ email: email });
-    if (!email_user) {
+    const searchedUser = await UserModel.findOne({ email: email });
+    if (!searchedUser) {
       return res
         .status(200)
         .json({ accepted: false, message: "User not found!" });
     }
 
-    // ===> find main user by id
-    const main_user = await UserModel.findById(_id);
-
-    // ===> if user email is same as main user
-    if (email_user._id == _id) {
-      const { password, contact, ...otherDetails } = email_user._doc;
-      return res
-        .status(200)
-        .json({ accepted: true, message: "User found", user: otherDetails });
-    }
-
-    // check if user is in his contact
-    let isContact = false;
-    const myContact = main_user.contact.filter((e) => e == email_user._id);
-
-    if (myContact.length > 0) {
-      isContact = true;
-    }
-
-    // ===> if exclude password and contacts from email_user
-    let { password, contact, ...otherDetails } = email_user._doc;
-    otherDetails.isContact = isContact;
+    // ===> if exclude password
+    const { password, ...otherDetails } = searchedUser._doc;
+    console.log(otherDetails);
 
     //console.log(otherDetails);
     res.status(200).json({
@@ -70,8 +50,9 @@ router.get("/:email/search", async (req, res) => {
 });
 
 router.put("/:id/add", async (req, res) => {
+  // id must have 24 character to be found in data base
   const newContactId = req.params.id;
-  const { _id } = req.body; // my id
+  const _id = req.body.id; // current user id
 
   console.log("new contact id: ", newContactId, "client id: ", _id);
 
@@ -83,6 +64,16 @@ router.put("/:id/add", async (req, res) => {
       .json({ accepted: false, message: "Action Forbidden" });
   } else {
     try {
+      // check if new contact id exist
+      const newContactExist = await UserModel.findById(newContactId);
+      if (!newContactExist) {
+        console.log("Contact id not found!");
+        return res.status(200).json({
+          accepted: false,
+          message: "Contact id not found!",
+        });
+      }
+
       // get main user by id
       const user = await UserModel.findById(_id);
 
@@ -109,44 +100,28 @@ router.put("/:id/add", async (req, res) => {
 
 router.get("/:id/contacts", async (req, res) => {
   const id = req.params.id;
-  console.log(id);
+  console.log("current user id: ", id);
 
   try {
     let user = await UserModel.findById(id);
-    console.log("myUser", user);
+    //console.log("myUser", user);
     let users = [];
 
-    user.contact.map((e) => users.push(e));
+    // display only conatcts user ids
+    //user.contact.map((e) => users.push(e));
 
     for (let i = 0; i < user.contact.length; i++) {
       let u = await UserModel.findById(user.contact[i]);
-      console.log(u);
-      let { password, ...otherDetails } = u._doc;
+      //console.log(u);
+      let { password, contact, ...otherDetails } = u._doc;
       users.push(otherDetails);
     }
     console.log(users);
 
-    res.status.json({ accepted: true, message: "Contacts found!" });
+    res.status(200).json({ accepted: true, contacts: users });
   } catch (error) {
     res.status(500).json(error);
   }
 });
-
-// router.get("/:id", async (req, res) => {
-//   const id = req.params.id;
-//   console.log("id: ", id);
-
-//   try {
-//     let user = await UserModel.findById(id);
-//     console.log("myUser", user);
-//     if (user) {
-//       const { password, ...otherDetails } = user._doc;
-
-//       res.status(200).json(otherDetails);
-//     }
-//   } catch (error) {
-//     res.status(500).json(error);
-//   }
-// });
 
 module.exports = router;

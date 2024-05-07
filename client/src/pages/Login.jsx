@@ -29,7 +29,7 @@ const Login = () => {
         setEmail("");
         setPassword("");
         console.log(result.data);
-        localStorage.setItem("profile", JSON.stringify(result.data.user)); // save user to the local storage
+        localStorage.setItem("currentUser", JSON.stringify(result.data.user)); // save user to the local storage
         navigate("/dashboard");
       } else {
         console.log(result.data.message);
