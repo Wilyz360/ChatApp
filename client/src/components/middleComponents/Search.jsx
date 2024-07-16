@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API from "../../api/api";
 
-const Search = ({ setShow, setSearchedUser }) => {
+const Search = ({ setShowLeftComponent, setSearchedUser }) => {
   const [email, setEmail] = useState("");
   const [isFriend, setIsFriend] = useState(false);
 
@@ -19,7 +19,7 @@ const Search = ({ setShow, setSearchedUser }) => {
 
         // why it doesnt update immediately?
         setSearchedUser(searchResult);
-        setShow("searchedUser");
+        setShowLeftComponent("searchedUser");
 
         //console.log(currentUser.contact, searchedUser._id);
 

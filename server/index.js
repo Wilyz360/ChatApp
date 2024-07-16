@@ -3,7 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config(); // now you can use process.env in any document since this is the root file
 
-// Connect to DB
+// Connect to mongo DB
 require("./database/database").connect();
 
 // import routes

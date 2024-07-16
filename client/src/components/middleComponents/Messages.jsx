@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 
-const Messages = () => {
+const Messages = ({ setShowLeftComponent, setSelectMessage }) => {
+  const handleMessage = () => {
+    setShowLeftComponent("messages");
+  };
+
   return (
     <>
-      <div>
+      <div onClick={handleMessage}>
         <p>message 1</p>
       </div>
       <div>

@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// =====> Get user by email
+// =====> Find user by email
 router.get("/:email/search", async (req, res) => {
   const email = req.params.email;
   console.log("email: ", email);
@@ -49,6 +49,22 @@ router.get("/:email/search", async (req, res) => {
   }
 });
 
+// Get contact info
+router.get("/:id/contact", async (req, res) => {
+  const id = req.params.id;
+  console.log(`contact id: ${id}`);
+
+  try {
+    const user = await UserModel.findById(id);
+    let { password, contact, ...otherDetails } = user._doc;
+
+    res.status(200).json({ accepted: true, user: otherDetails });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Add new contact to DB
 router.put("/:id/add", async (req, res) => {
   // id must have 24 character to be found in data base
   const newContactId = req.params.id;
@@ -98,6 +114,44 @@ router.put("/:id/add", async (req, res) => {
   }
 });
 
+// Update user information
+
+router.put("/:id/update", async (req, res) => {
+  const id = req.params.id;
+  const { age, gender } = req.body;
+
+  let update = {};
+
+  if (age && gender) {
+    update.age = age;
+    update.gender = gender;
+  } else if (age && !gender) {
+    update.age = age;
+  } else if (!age && gender) {
+    update.gender = gender;
+  } else {
+    res.status(200).json({ accepted: false, message: "Something went wrong" });
+  }
+
+  try {
+    const doc = await UserModel.findByIdAndUpdate(id, update, { new: true });
+    console.log(doc.age, doc.gender);
+
+    const { password, ...otherDetails } = doc._doc;
+
+    console.log(otherDetails);
+
+    res.status(200).json({
+      accepted: true,
+      message: "User information updated!",
+      user: otherDetails,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Get user contacts
 router.get("/:id/contacts", async (req, res) => {
   const id = req.params.id;
   console.log("current user id: ", id);

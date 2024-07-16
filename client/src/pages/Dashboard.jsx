@@ -1,18 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import API from "../api/api";
 import Header from "../components/Header";
-import RightColumn from "../components/RightColumn";
+import LeftColumn from "../components/L_Column";
 import MiddleColumn from "../components/MiddleColumn";
-import LeftColumn from "../components/LeftColumn";
+import RightColumn from "../components/R_Column";
+import io from "socket.io-client";
+
+// const socket = io.connect("http://localhost:4000");
 
 const DashBoard = () => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
-  const [show, setShow] = useState(false);
+  const socket = useRef();
+
+  const [show, setShow] = useState("");
+  const [showLeftComponent, setShowLeftComponent] = useState("");
   const [searchedUser, setSearchedUser] = useState({});
+  const [selectMessage, setSelectMessage] = useState("");
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -40,6 +47,11 @@ const DashBoard = () => {
     checkAuthentication();
   }, []);
 
+  // Connect to Socket.io
+  useEffect(() => {
+    socket.current = io("ws://localhost:8800");
+  });
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -52,13 +64,19 @@ const DashBoard = () => {
     <div className="container">
       <Header />
       <div className="row">
-        <RightColumn setShow={setShow} />
+        <LeftColumn setShow={setShow} />
         <MiddleColumn
           setShow={setShow}
           show={show}
+          setShowLeftComponent={setShowLeftComponent}
           setSearchedUser={setSearchedUser}
+          setSelectMessage={setSelectMessage}
         />
-        <LeftColumn show={show} searchedUser={searchedUser} />
+        <RightColumn
+          show={show}
+          showLeftComponent={showLeftComponent}
+          searchedUser={searchedUser}
+        />
       </div>
     </div>
   );
