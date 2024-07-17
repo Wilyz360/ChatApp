@@ -8,13 +8,14 @@ import MiddleColumn from "../components/MiddleColumn";
 import RightColumn from "../components/R_Column";
 import io from "socket.io-client";
 
-// const socket = io.connect("http://localhost:4000");
-
 const DashBoard = () => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
+  const user = JSON.parse(localStorage.getItem("currentUser"));
+
   const socket = useRef();
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const [show, setShow] = useState("");
   const [showLeftComponent, setShowLeftComponent] = useState("");
@@ -49,8 +50,13 @@ const DashBoard = () => {
 
   // Connect to Socket.io
   useEffect(() => {
-    socket.current = io("ws://localhost:8800");
-  });
+    socket.current = io.connect("ws://localhost:8800");
+    socket.current.emit("new-user-add", user._id);
+    socket.current.on("get-users", (users) => {
+      console.log("Online users:", users);
+      setOnlineUsers(users);
+    });
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;

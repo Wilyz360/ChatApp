@@ -8,6 +8,7 @@ const Header = () => {
     e.preventDefault();
     localStorage.removeItem("currentUser");
     navigate("/");
+    window.location.reload(); // reload web page when log out
   };
 
   return (

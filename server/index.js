@@ -12,6 +12,8 @@ const loginRoute = require("./routers/loginRoute");
 const authRoute = require("./routers/authRoute");
 const userRoute = require("./routers/userRoute");
 const logoutRoute = require("./routers/logoutRoute");
+const chatRoute = require("./routers/chatRoute");
+const messageRoute = require("./routers/messageRoute");
 
 const app = express();
 const PORT = 4000;
@@ -41,6 +43,8 @@ app.use("/v1/login", loginRoute);
 app.use("/v1/user", userRoute);
 app.use("/v1/auth", authRoute);
 app.use("/v1/logout", logoutRoute);
+app.use("/v1/chat", chatRoute);
+app.use("/v1/message", messageRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);
