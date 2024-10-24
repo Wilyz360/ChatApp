@@ -2,11 +2,11 @@ import { useState } from "react";
 import API from "../../api/api";
 
 const Profile = ({ user }) => {
-  console.log(user);
+  // console.log(user);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-  console.log(currentUser);
+  // console.log(currentUser);
 
   const [editProfile, setEditProfile] = useState(false);
 
@@ -33,6 +33,35 @@ const Profile = ({ user }) => {
     }
 
     setEditProfile(false);
+  };
+
+  const handleStartChat = async (e) => {
+    e.preventDefault();
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    // if (currentUser._id !== user._id) {
+    try {
+      const { data: result } = await API.get(
+        `/chat/find/${currentUser._id}/${user._id}`
+      );
+      if (result !== null) {
+        window.alert("Chat found");
+      } else {
+        const { data: result } = await API.post("/chat", {
+          senderId: currentUser._id,
+          receiverId: user._id,
+        });
+
+        if (result !== null) {
+          window.alert("new chat created");
+        } else {
+          window.alert("something went wrong");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    // }
   };
 
   return (
@@ -63,7 +92,9 @@ const Profile = ({ user }) => {
               </button>
             </div>
           ) : (
-            <></>
+            <div>
+              <button onClick={handleStartChat}>Chat</button>
+            </div>
           )}
         </div>
       ) : (

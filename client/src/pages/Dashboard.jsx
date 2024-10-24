@@ -50,12 +50,22 @@ const DashBoard = () => {
 
   // Connect to Socket.io
   useEffect(() => {
+    // Connect to the backend server
     socket.current = io.connect("ws://localhost:8800");
+
+    // Emit the current user's ID to the server
     socket.current.emit("new-user-add", user._id);
+
+    // Listen for the online users update event from the server
     socket.current.on("get-users", (users) => {
       console.log("Online users:", users);
       setOnlineUsers(users);
     });
+
+    // Cleanup the socket connection on component unmount
+    return () => {
+      socket.current.disconnect(); // Properly disconnect the socket
+    };
   }, []);
 
   if (loading) {
@@ -77,6 +87,7 @@ const DashBoard = () => {
           setShowLeftComponent={setShowLeftComponent}
           setSearchedUser={setSearchedUser}
           setSelectMessage={setSelectMessage}
+          onlineUsers={onlineUsers}
         />
         <RightColumn
           show={show}

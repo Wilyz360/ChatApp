@@ -8,6 +8,7 @@ const MiddleColumn = ({
   setShowLeftComponent,
   setSearchedUser,
   setSelectMessage,
+  onlineUsers,
 }) => {
   return (
     <>
@@ -20,6 +21,7 @@ const MiddleColumn = ({
           <Contacts
             setShowLeftComponent={setShowLeftComponent}
             setSearchedUser={setSearchedUser}
+            onlineUsers={onlineUsers}
           />
         ) : (
           <Messages

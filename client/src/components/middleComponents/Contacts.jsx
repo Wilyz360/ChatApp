@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api/api";
 
-const Contacts = ({ setShowLeftComponent, setSearchedUser }) => {
+const Contacts = ({ setShowLeftComponent, setSearchedUser, onlineUsers }) => {
   const [contacts, setContacts] = useState([]);
+  console.log("online users: ", onlineUsers);
 
   useEffect(() => {
     const getAllContacts = async () => {
@@ -43,14 +44,36 @@ const Contacts = ({ setShowLeftComponent, setSearchedUser }) => {
 
   return (
     <div>
-      {contacts.map((contact) => (
-        <div key={contact._id} onClick={() => handleContactUser(contact._id)}>
-          <p>
-            {contact.firstname} {contact.lastname}
-          </p>
-          <hr />
-        </div>
-      ))}
+      {contacts.map(
+        (contact) => {
+          let isOnline = false;
+
+          onlineUsers.forEach((user) => {
+            if (user.userId === contact._id) {
+              isOnline = true;
+            }
+          });
+          return (
+            <div
+              key={contact._id}
+              onClick={() => handleContactUser(contact._id)}
+            >
+              <p>
+                {contact.firstname}
+                {isOnline && <span> online </span>}
+              </p>
+              <hr />
+            </div>
+          );
+        }
+        // <div key={contact._id} onClick={() => handleContactUser(contact._id)}>
+        //   <p>
+        //     {contact.firstname} {contact.lastname}
+        //     {onlineUsers.includes(contact._id) && <span> online </span>}
+        //   </p>
+        //   <hr />
+        // </div>
+      )}
     </div>
   );
 };
