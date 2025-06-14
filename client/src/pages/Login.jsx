@@ -1,29 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { loginStart, loginSuccess, loginFailure } from "../features/authSlice";
+import API from "../api/api"; // Assuming you have an API utility for making requests
 import "../styles/login.css";
 
 const Login = () => {
+  const dispatch = useDispatch(); // Redux dispatch function
+  const { loading } = useSelector((state) => state.auth); // Access loading state from Redux store
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(loginStart());
     try {
-      navigate("/dashboard");
+      const response = await API.post("/login", { email, password });
+      if (response.status == 200) {
+        console.log("Login successful:", response.data);
+        dispatch(loginSuccess(response.data));
+        setEmail("");
+        setPassword("");
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       // Handle error, e.g., show a notification or alert
       alert("Login failed. Please try again.");
       return;
     }
-
-    // Here you would typically handle the login logic, such as calling an API
-    console.log("Email:", email);
-    console.log("Password:", password);
-    // Reset form fields after submission
-    setEmail("");
-    setPassword("");
   };
 
   return (
@@ -43,7 +49,7 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit">{loading ? "Loading..." : "Log In"}</button>
       </form>
     </div>
   );

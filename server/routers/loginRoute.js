@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/userModel");
 
@@ -31,10 +31,10 @@ router.post("/", async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "2h" }
+      { expiresIn: "15m" }
     );
 
-    const { password, ...userData } = user._doc;
+    const { password: userPassword, ...userData } = user._doc;
     console.log("User data without password: ", userData);
 
     // Send token in response
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: false,
-        maxAge: 3600000,
+        maxAge: 900000,
         sameSite: "Lax",
       })
       .json({ message: "Login successful", user: userData });
