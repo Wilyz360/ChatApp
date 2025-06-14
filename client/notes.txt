@@ -1,0 +1,31 @@
+Routes:
+- /home
+    - /login
+        (Private)
+        - /dashboard
+            - /dashboard/profile
+            - /dashboard/chats
+                - /dashboard/chats/:chatId
+            - /dashboard/contacts
+                - /dashboard/contacts/contactId
+            - /dashboard/settings
+            - /dashboard/search/:username
+    - /signup
+
+Pages:
+p\Public pages:
+- /home
+- /login
+- /signup
+
+Private pages:
+- /dashboard
+    - /dashboard/profile
+    - /dashboard/chats
+        - /dashboard/chats/:chatId
+    - /dashboard/contacts
+        - /dashboard/contacts/contactId
+    - /dashboard/settings
+    - /dashboard/search/:username
+        - /dashboard/profile/:id
+

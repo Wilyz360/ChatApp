@@ -1,0 +1,121 @@
+.dashboard-3col-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+.search-text {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dashboard-nav {
+  width: 20%;
+  min-width: 180px;
+  border-right: 1px solid #eee;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: #2c2c2c;
+}
+
+.dashboard-main {
+  width: 40%;
+  border-right: 1px solid #eee;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: #2c2c2c;
+}
+
+.dashboard-detail {
+  width: 40%;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: #2c2c2c;
+  border-left: 1px solid #eee;
+}
+
+/* Add to: /Users/csci/Documents/chat_app/client/src/style/dashboard.css */
+.list-item {
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.list-item:hover {
+  background: #e3e6ea;
+  color: #007bff;
+}
+
+/* Tablet: Adjust column widths */
+@media (max-width: 1200px) {
+  .dashboard-nav {
+    width: 25%;
+    min-width: 120px;
+  }
+  .dashboard-main,
+  .dashboard-detail {
+    width: 37.5%;
+  }
+}
+
+/* Mobile: Stack columns vertically */
+@media (max-width: 900px) {
+  .dashboard-3col-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+  .dashboard-nav,
+  .dashboard-main,
+  .dashboard-detail {
+    width: 100%;
+    min-width: 0;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    height: auto;
+    padding: 0.75rem;
+  }
+  .dashboard-detail {
+    border-bottom: none;
+    background: #fafbfc;
+    border-left: none;
+  }
+}
+
+/* Small mobile: Reduce padding and font size */
+@media (max-width: 600px) {
+  .dashboard-nav,
+  .dashboard-main,
+  .dashboard-detail {
+    padding: 0.5rem;
+  }
+  .dashboard-nav h1 {
+    font-size: 1.1rem;
+  }
+  .dashboard-nav ul li {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Optional: Hide detail panel if empty on mobile */
+@media (max-width: 900px) {
+  .dashboard-detail:empty {
+    display: none;
+  }
+}
