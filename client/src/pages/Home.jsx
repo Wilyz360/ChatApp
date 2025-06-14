@@ -1,11 +1,10 @@
 import React from "react";
 import { Link } from "react-router";
-import Login from "./Login";
-import Signup from "./Signup";
+import "../styles/home.css";
 
 const Home = () => {
   return (
-    <div>
+    <div className="home-container">
       <h1>Home Page</h1>
       <p>Welcome to the home page!</p>
       <p>

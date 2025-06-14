@@ -4,7 +4,7 @@ const UserMoel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 
 router.post("/", async (req, res) => {
-  console.log("inputs: ", req, body);
+  console.log("inputs: ", req.body);
 
   // check if any field is missing
   if (

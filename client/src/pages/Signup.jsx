@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import API from "../api/api"; // Assuming you have an API utility for making requests
+import "../styles/signup.css";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -15,39 +17,39 @@ const Signup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
+    console.log("Form Data:", formData);
 
     try {
-      // Simulating a signup process
-      navigate("/login");
+      const response = await API.post("/signup", formData);
+      if (response.status === 201) {
+        console.log("Signup successful:", response.data);
+        alert("Signup successful! Please log in.");
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+        navigate("/login");
+      }
     } catch (error) {
       console.error("Signup failed:", error);
       // Handle error, e.g., show a notification or alert
       alert("Signup failed. Please try again.");
       return;
     }
-
-    // Here you would typically handle the signup logic, such as calling an API
-    console.log("Form Data:", formData);
-
-    // Reset form fields after submission
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
   };
 
   return (
-    <div>
+    <div className="signup-container">
       <h2>Signup Page</h2>
       <form onSubmit={handleSubmit}>
         <input

@@ -1,6 +1,6 @@
 import React from "react";
 import { useOutletContext } from "react-router";
-import "../../style/dashboard.css"; // Assuming you have a CSS file for styling
+import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Chats = () => {
   const { handleShowDetail } = useOutletContext();

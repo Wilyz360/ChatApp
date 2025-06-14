@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router";
-import "../../style/dashboard.css"; // Assuming you have a CSS file for styling
+import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Dashboard = () => {
   const [detailComponent, setDetailComponent] = useState(null);
@@ -11,7 +11,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-3col-container">
       <nav className="dashboard-nav">
-        <h1>Dashboard</h1>
+        <h2>Dashboard</h2>
 
         <div className="search-bar">
           <input className="search-text" type="text" />
