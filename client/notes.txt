@@ -29,3 +29,5 @@ Private pages:
     - /dashboard/search/:username
         - /dashboard/profile/:id
 
+
+notes:
