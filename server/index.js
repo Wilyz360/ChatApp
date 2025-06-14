@@ -58,7 +58,7 @@ app.use("/api/signup", signupRoute);
 app.use("/api/login", loginRoute);
 
 // private routes
-app.use("/api/user", authMiddleware, userRoute);
+app.use("/api/user", userRoute);
 app.use("/api/chat", authMiddleware, chatRoute);
 app.use("/api/message", authMiddleware, messageRoute);
 

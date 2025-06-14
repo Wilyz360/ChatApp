@@ -1,26 +1,48 @@
 import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router";
 import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [detailComponent, setDetailComponent] = useState(null);
 
   const handleShowDetail = (component) => {
     setDetailComponent(component);
   };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (search.trim()) {
+      navigate(`/dashboard/search/${encodeURIComponent(search.trim())}`);
+      setSearch("");
+      setDetailComponent(null); // Clear detail view on new search
+    }
+  };
+
   return (
     <div className="dashboard-3col-container">
       <nav className="dashboard-nav">
         <h2>Dashboard</h2>
 
-        <div className="search-bar">
-          <input className="search-text" type="text" />
-          <button className="search-button" type="button">
-            Search
-          </button>
-        </div>
-
         <ul style={{ listStyle: "none", padding: 0 }}>
+          <li className="search-bar">
+            <input
+              className="search-text"
+              type="text"
+              name="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+            />
+            <button
+              onClick={handleSearch}
+              type="button"
+              className="search-button"
+            >
+              Search
+            </button>
+          </li>
           <li>
             <NavLink to="/dashboard">Profile</NavLink>
           </li>

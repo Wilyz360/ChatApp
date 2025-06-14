@@ -49,8 +49,35 @@ router.get("/email/:email", async (req, res) => {
 // get user by name
 router.get("/search/:search", async (req, res) => {
   try {
-    const { name } = req.params;
-    let users = await User.find({ name: new RegExp(name, "i") });
+    const search = req.params.search;
+    console.log("Search term:", search);
+    const [first, second] = search.toLowerCase().split(" ");
+
+    let query = {};
+
+    if (second) {
+      query = {
+        $or: [
+          {
+            firstName: new RegExp(`${first}$`, "i"),
+            lastName: new RegExp(`${second}$`, "i"),
+          },
+          {
+            firstName: new RegExp(`${second}$`, "i"),
+            lastName: new RegExp(`${first}$`, "i"),
+          },
+        ],
+      };
+    } else {
+      query = {
+        $or: [
+          { firstName: new RegExp(`${search}$`, "i") },
+          { lastName: new RegExp(`${search}$`, "i") },
+        ],
+      };
+    }
+
+    let users = await User.find(query).select("-password -con");
     if (!users || users.length === 0) {
       return res.status(404).json({ message: "No users found" });
     }

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/dashboard/Dashboard";
+import SearchList from "./pages/dashboard/SearchList";
 import User from "./pages/dashboard/User";
 import Chats from "./pages/dashboard/Chats";
 import Contacts from "./pages/dashboard/Contacts";
@@ -28,6 +29,7 @@ function App() {
           </ProtectedRoute>
         }
       >
+        <Route path="search/:query" element={<SearchList />} />
         <Route index element={<User />} />
         <Route path="chats" element={<Chats />} />
         <Route path="contacts" element={<Contacts />} />
