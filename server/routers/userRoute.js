@@ -152,10 +152,10 @@ router.post("/contact/add", async (req, res) => {
     if (!contact) {
       return res.status(404).json({ message: "Contact not found" });
     }
-    if (user.contact.includes(contactId)) {
+    if (user.contacts.includes(contactId)) {
       return res.status(400).json({ message: "Contact already exists" });
     }
-    user.contact.push(contactId);
+    user.contacts.push(contactId);
     await user.save();
     res.status(200).json({ message: "Contact added successfully" });
   } catch (error) {

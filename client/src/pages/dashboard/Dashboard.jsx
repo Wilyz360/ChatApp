@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+import User from "./User";
 import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [search, setSearch] = useState("");
   const [detailComponent, setDetailComponent] = useState(null);
 
@@ -44,7 +47,13 @@ const Dashboard = () => {
             </button>
           </li>
           <li>
-            <NavLink to="/dashboard">Profile</NavLink>
+            <button
+              className="profile-button"
+              type="button"
+              onClick={() => handleShowDetail(<User user={user} />)}
+            >
+              Profile
+            </button>
           </li>
           <li>
             <NavLink to="/dashboard/chats">Chats</NavLink>

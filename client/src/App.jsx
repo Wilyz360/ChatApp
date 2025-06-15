@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router";
+import { useSelector } from "react-redux";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -10,9 +11,9 @@ import Chats from "./pages/dashboard/Chats";
 import Contacts from "./pages/dashboard/Contacts";
 import Settings from "./pages/dashboard/Settings";
 
-const isLoggedIn = true; // Simulating authentication status
 const ProtectedRoute = ({ children }) => {
-  return isLoggedIn ? children : <Login />;
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  return isAuthenticated ? children : <Login />;
 };
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
         }
       >
         <Route path="search/:query" element={<SearchList />} />
-        <Route index element={<User />} />
+        {/* <Route index element={<User user={user} />} /> */}
         <Route path="chats" element={<Chats />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="settings" element={<Settings />} />

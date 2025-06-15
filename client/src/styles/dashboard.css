@@ -20,6 +20,11 @@ body {
   overflow: hidden;
 }
 
+li {
+  list-style: none;
+  margin: 0.5rem 0rem;
+}
+
 .search-text {
   width: 100%;
   padding: 0.5rem;
@@ -44,6 +49,20 @@ body {
 
 .search-button:hover {
   background-color: #2563eb;
+}
+
+.profile-button {
+  padding: 0.5rem 1rem;
+  background-color: #38a169;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-block;
+}
+.profile-button:hover {
+  background-color: #2f855a;
 }
 
 .dashboard-nav {
@@ -76,7 +95,21 @@ body {
   color: #f1f1f1;
 }
 
+.add-button {
+  padding: 0.5rem 1rem;
+  background-color: #38a169;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
 .list-item {
+  margin: 1rem 0rem;
+
   padding: 0.5rem 1rem;
   margin-bottom: 0.5rem;
   border-radius: 6px;

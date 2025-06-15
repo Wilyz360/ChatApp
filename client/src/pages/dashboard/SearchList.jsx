@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useOutletContext } from "react-router-dom";
+import User from "./User";
 import API from "../../api/api";
 
 const SearchList = () => {
+  const { handleShowDetail } = useOutletContext();
   const { query } = useParams();
   console.log("Search term:", query);
 
@@ -15,7 +17,8 @@ const SearchList = () => {
     setError(null);
     try {
       const response = await API.get(
-        `/user/search/${encodeURIComponent(searchTerm)}`
+        `/user/search/${encodeURIComponent(searchTerm)}`,
+        { withCredentials: true }
       );
       if (response.status === 204) {
         setResults([]);
@@ -49,13 +52,12 @@ const SearchList = () => {
       {!loading && !error && results.length > 0 && (
         <ul className="space-y-4" style={{ listStyleType: "none", padding: 0 }}>
           {results.map((item) => (
-            <li key={item._id} className="border p-4 rounded shadow">
-              <Link
-                to={`/items/${item._id}`}
-                className="text-blue-500 hover:underline"
-              >
-                <h3 className="text-xl font-semibold">{`${item.firstName} ${item.lastName}`}</h3>
-              </Link>
+            <li
+              onClick={() => handleShowDetail(<User user={item} />)}
+              key={item._id}
+              className="border p-4 rounded shadow"
+            >
+              <h3 className="text-xl font-semibold">{`${item.firstName} ${item.lastName}`}</h3>
             </li>
           ))}
         </ul>

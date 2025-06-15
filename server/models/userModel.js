@@ -26,7 +26,7 @@ const userSchema = new moongose.Schema({
     type: String,
     default: null,
   },
-  contact: {
+  contacts: {
     type: [],
   },
 });

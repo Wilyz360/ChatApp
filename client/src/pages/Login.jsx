@@ -19,7 +19,7 @@ const Login = () => {
       const response = await API.post("/login", { email, password });
       if (response.status == 200) {
         console.log("Login successful:", response.data);
-        dispatch(loginSuccess(response.data));
+        dispatch(loginSuccess(response.data.user));
         setEmail("");
         setPassword("");
         navigate("/dashboard");
@@ -27,6 +27,7 @@ const Login = () => {
     } catch (error) {
       console.error("Login failed:", error);
       // Handle error, e.g., show a notification or alert
+      dispatch(loginFailure());
       alert("Login failed. Please try again.");
       return;
     }
@@ -50,6 +51,9 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">{loading ? "Loading..." : "Log In"}</button>
+        <p>
+          Don't have an account? <a href="/signup">Sign up</a>
+        </p>
       </form>
     </div>
   );
