@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useOutletContext } from "react-router-dom";
 import User from "./User";
 import API from "../../api/api";
+import "../../styles/list.css"; // Assuming you have a CSS file for styling
 
 const SearchList = () => {
   const { handleShowDetail } = useOutletContext();
@@ -42,7 +43,7 @@ const SearchList = () => {
   console.log("Search results:", results);
 
   return (
-    <div className="p-4">
+    <div className="list-container">
       <h2 className="text-2xl font-bold mb-4">Search Results</h2>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -50,14 +51,18 @@ const SearchList = () => {
         <p>No results found for "{query}".</p>
       )}
       {!loading && !error && results.length > 0 && (
-        <ul className="space-y-4" style={{ listStyleType: "none", padding: 0 }}>
+        <ul className="list-list">
           {results.map((item) => (
             <li
               onClick={() => handleShowDetail(<User user={item} />)}
               key={item._id}
-              className="border p-4 rounded shadow"
+              className="list-item"
             >
-              <h3 className="text-xl font-semibold">{`${item.firstName} ${item.lastName}`}</h3>
+              <div className="list-name">
+                <strong>
+                  {item.firstName} {item.lastName}
+                </strong>
+              </div>
             </li>
           ))}
         </ul>

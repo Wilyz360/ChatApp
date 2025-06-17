@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SearchList from "./pages/dashboard/SearchList";
-import User from "./pages/dashboard/User";
 import Chats from "./pages/dashboard/Chats";
+import Messages from "./pages/dashboard/Messages";
 import Contacts from "./pages/dashboard/Contacts";
 import Settings from "./pages/dashboard/Settings";
 
@@ -33,6 +33,7 @@ function App() {
         <Route path="search/:query" element={<SearchList />} />
         {/* <Route index element={<User user={user} />} /> */}
         <Route path="chats" element={<Chats />} />
+        <Route path="messages" element={<Messages />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="settings" element={<Settings />} />
       </Route>

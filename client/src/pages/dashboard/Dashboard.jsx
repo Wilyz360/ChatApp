@@ -28,7 +28,7 @@ const Dashboard = () => {
       <nav className="dashboard-nav">
         <h2>Dashboard</h2>
 
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <ul className="dashboard-nav-list">
           <li className="search-bar">
             <input
               className="search-text"
@@ -46,22 +46,25 @@ const Dashboard = () => {
               Search
             </button>
           </li>
-          <li>
+          <li className="nav-item">
             <button
-              className="profile-button"
               type="button"
-              onClick={() => handleShowDetail(<User user={user} />)}
+              onClick={() =>
+                handleShowDetail(
+                  <User user={user} handleShowDetail={handleShowDetail} />
+                )
+              }
             >
               Profile
             </button>
           </li>
-          <li>
+          <li className="nav-item">
             <NavLink to="/dashboard/chats">Chats</NavLink>
           </li>
-          <li>
+          <li className="nav-item">
             <NavLink to="/dashboard/contacts">Contacts</NavLink>
           </li>
-          <li>
+          <li className="nav-item">
             <NavLink to="/dashboard/settings">Settings</NavLink>
           </li>
         </ul>

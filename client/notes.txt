@@ -31,3 +31,12 @@ Private pages:
 
 
 notes:
+
+<li
+          className="list-item"
+          onClick={() =>
+            handleShowDetail(<User user={{ firstName: "Alice", email: "" }} />)
+          }
+        >
+          Alice
+        </li>

@@ -123,14 +123,14 @@ router.put("/:id", async (req, res) => {
 });
 
 // get users contact list
-router.get("/contact/list/:id", async (req, res) => {
+router.get("/contacts/:id", async (req, res) => {
   try {
     const { id } = req.params;
     let user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    let contacts = await User.find({ _id: { $in: user.contact } });
+    let contacts = await User.find({ _id: { $in: user.contacts } });
     contacts = contacts.map((contact) => {
       contact.password = undefined;
       return contact;
@@ -163,7 +163,7 @@ router.post("/contact/add", async (req, res) => {
   }
 });
 // remove user from contact list
-router.post("/contact/remove", async (req, res) => {
+router.post("/contact/:id", async (req, res) => {
   try {
     const { userId, contactId } = req.body;
     let user = await User.findById(userId);

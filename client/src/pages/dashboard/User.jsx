@@ -1,8 +1,12 @@
 import React, { use, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useOutletContext, useNavigate } from "react-router-dom";
+import { setUser } from "../../features/authSlice";
 import API from "../../api/api";
+import Messages from "./Messages";
 
 const User = ({ user }) => {
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -30,6 +34,11 @@ const User = ({ user }) => {
       );
       if (response.status === 200) {
         alert("Friend request sent successfully!");
+        const updateUser = await API.get(`/user/${currentUser._id}`, {
+          withCredentials: true,
+        });
+        dispatch(setUser(updateUser.data));
+        console.log("Current user updated successfully!");
         setSent(true);
       }
     } catch (err) {
@@ -48,17 +57,19 @@ const User = ({ user }) => {
         <p className="text-gray-600">Gender: {user.gender}</p>
         {/* if search button is cliked*/}
         {currentUser &&
-          currentUser._id !== user._id &&
-          !sent &&
-          !isAlreadyContact && (
-            <button
-              onClick={handleButtton}
-              disabled={loading}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              {loading ? "Sending..." : "Add Friend"}
-            </button>
-          )}
+        currentUser._id !== user._id &&
+        !sent &&
+        !isAlreadyContact ? (
+          <button
+            onClick={handleButtton}
+            disabled={loading}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {loading ? "Sending..." : "Add"}
+          </button>
+        ) : isAlreadyContact ? (
+          <button>Message</button>
+        ) : null}
       </div>
     </div>
   );
