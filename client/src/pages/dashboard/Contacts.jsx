@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
 import API from "../../api/api";
 import User from "./User";
@@ -38,15 +38,15 @@ const Contacts = () => {
     fetchData();
   }, []);
 
-  const handleChatButton = () => {
-    setDetailComponent(<Messages />);
+  const handleChatButton = (user) => {
+    setDetailComponent(<Messages user={user} />);
   };
 
   const handleShowUser = (user) => {
     setDetailComponent(
       <div>
         <User user={user} setDetailComponent={setDetailComponent} />
-        <button onClick={handleChatButton}>Chat</button>
+        <button onClick={() => handleChatButton(user)}>Chat</button>
       </div>
     );
   };

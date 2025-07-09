@@ -11,6 +11,7 @@ router.get("/:userId", async (req, res) => {
       "firstName lastName",
       "-password"
     );
+
     res.status(200).json(chats);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import User from "./User";
-import Messages from "./Messages";
 import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Dashboard = () => {
