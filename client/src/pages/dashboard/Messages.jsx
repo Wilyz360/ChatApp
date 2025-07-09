@@ -1,7 +1,7 @@
 import React from "react";
 
-const Messages = ({ user }) => {
-  console.log("Messages component rendered for user:", user);
+const Messages = () => {
+  console.log("Messages component rendered for user:");
   return <div>Messages</div>;
 };
 

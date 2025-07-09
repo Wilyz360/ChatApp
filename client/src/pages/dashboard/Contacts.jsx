@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useSelector } from "react-redux";
 import API from "../../api/api";
 import User from "./User";
+import Messages from "./Messages";
 import "../../styles/list.css"; // Assuming you have a CSS file for styling
 
 const Contacts = () => {
-  const { handleShowDetail } = useOutletContext();
+  const { setDetailComponent } = useOutletContext();
   const currentUser = useSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,6 +38,19 @@ const Contacts = () => {
     fetchData();
   }, []);
 
+  const handleChatButton = () => {
+    setDetailComponent(<Messages />);
+  };
+
+  const handleShowUser = (user) => {
+    setDetailComponent(
+      <div>
+        <User user={user} setDetailComponent={setDetailComponent} />
+        <button onClick={handleChatButton}>Chat</button>
+      </div>
+    );
+  };
+
   return (
     <div className="list-container">
       <h2>Contacts</h2>
@@ -50,7 +64,7 @@ const Contacts = () => {
           !error &&
           contactList.map((contact) => (
             <li
-              onClick={() => handleShowDetail(<User user={contact} />)}
+              onClick={() => handleShowUser(contact)}
               key={contact._id}
               style={{ marginBottom: "10px" }}
               className="list-item"

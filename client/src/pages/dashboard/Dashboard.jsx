@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useNavigate, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import User from "./User";
+import Messages from "./Messages";
 import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Dashboard = () => {
@@ -10,8 +11,8 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [detailComponent, setDetailComponent] = useState(null);
 
-  const handleShowDetail = (component) => {
-    setDetailComponent(component);
+  const handleShowUser = (user) => {
+    setDetailComponent(<User user={user} />);
   };
 
   const handleSearch = (e) => {
@@ -26,7 +27,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-3col-container">
       <nav className="dashboard-nav">
-        <h2>Dashboard</h2>
+        <h2>{`${user.firstName} ${user.lastName}`}</h2>
 
         <ul className="dashboard-nav-list">
           <li className="search-bar">
@@ -47,14 +48,7 @@ const Dashboard = () => {
             </button>
           </li>
           <li className="nav-item">
-            <button
-              type="button"
-              onClick={() =>
-                handleShowDetail(
-                  <User user={user} handleShowDetail={handleShowDetail} />
-                )
-              }
-            >
+            <button type="button" onClick={() => handleShowUser(user)}>
               Profile
             </button>
           </li>
@@ -72,13 +66,9 @@ const Dashboard = () => {
 
       {/* Render the child routes here */}
       <div className="dashboard-main">
-        <Outlet context={{ handleShowDetail }} />
+        <Outlet context={{ setDetailComponent }} />
       </div>
 
-      {/* This will render the component for the child route */}
-      {/* For example, if the URL is /dashboard/user, it will render the User component */}
-      {/* If the URL is /dashboard/chats, it will render the Chats component */}
-      {/* And so on for contacts and settings */}
       <div className="dashboard-detail">{detailComponent}</div>
     </div>
   );

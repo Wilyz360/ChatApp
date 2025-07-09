@@ -30,3 +30,21 @@
   font-size: 1.1rem;
   font-weight: 500;
 }
+
+.list-message {
+  background: #23272f;
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 12px;
+  color: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  line-height: 1.5;
+  word-break: break-word;
+  transition: background 0.2s;
+}
+
+.list-message:hover {
+  background: #3182ce;
+  color: #fff;
+}

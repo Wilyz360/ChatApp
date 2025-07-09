@@ -33,7 +33,6 @@ function App() {
         <Route path="search/:query" element={<SearchList />} />
         {/* <Route index element={<User user={user} />} /> */}
         <Route path="chats" element={<Chats />} />
-        <Route path="messages" element={<Messages />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="settings" element={<Settings />} />
       </Route>
