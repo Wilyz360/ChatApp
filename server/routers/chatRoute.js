@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
       members: [senderId, receiverId],
     });
     await chat.save();
-    chat = await chat.populate("members", "firstName lastName, -password");
+    chat = await chat.populate("members", "firstName lastName");
     res.status(201).json(chat);
   } catch (error) {
     res.status(500).json({ message: error.message });

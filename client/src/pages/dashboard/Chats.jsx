@@ -42,7 +42,7 @@ const Chats = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   const handleShowMessages = (chat) => {
     console.log("Selected chat ID:", chat);

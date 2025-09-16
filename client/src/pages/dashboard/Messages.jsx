@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import API from "../../api/api";
 
 const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
@@ -9,8 +9,10 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
   const [error, setError] = useState(null);
 
   const fetchChat = async () => {
-    if (!currentUser || !user) {
+    if (!user) {
+      // both are required to fetch or create chat
       console.error("Current user or selected user is missing.");
+      setChat(chatInfo); // use chatInfo if provided
       return null;
     }
 
@@ -34,12 +36,9 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
 
   const fetchMessages = async () => {
     try {
-      const response = await API.get(
-        `/messages/${chat ? chat._id : chatInfo._id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await API.get(`/messages/${chat._id}`, {
+        withCredentials: true,
+      });
       if (response.status === 200) {
         console.log("Fetched messages:", response.data);
 
@@ -54,21 +53,29 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
   };
 
   useEffect(() => {
+    // reset when user or chatInfo changes
+    setChat(null);
+    setListMessages([]);
+    setError(null);
+  }, [user, chatInfo]); // reset when user or chatInfo changes
+
+  useEffect(() => {
+    // fetch or create chat when user or chatInfo changes
     const getChat = async () => {
       setLoading(true);
       const fetchedChat = await fetchChat();
       if (fetchedChat) {
         setChat(fetchedChat);
-        setLoading(false);
       } // else create new chat on send message
       setLoading(false);
     };
 
     getChat();
-  }, [currentUser, user]);
+  }, [currentUser, user, chatInfo]); // refetch if currentUser, user or chatInfo changes
 
   useEffect(() => {
-    if ((!chat || !chat._id) && !chatInfo) return; // wait for chat to be set
+    // fetch messages when chat changes
+    if (!chat || !chat._id) return; // wait for chat to be set
     const getMessages = async () => {
       setLoading(true);
       const fetchedMessages = await fetchMessages();
@@ -78,20 +85,39 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
       setLoading(false);
     };
     getMessages();
-  }, [chat, chatInfo]);
+  }, [chat]); // only refetch if chat changes
 
   const handleMessage = async (e) => {
     e.preventDefault();
 
     setError(null);
 
-    let chatId = chat && chat.id;
+    let chatId = chat && chat._id;
 
     if (!chatId) {
       // create new chat
+      try {
+        const response = await API.post(
+          "/chats/",
+          {
+            senderId: currentUser._id,
+            receiverId: user._id,
+          },
+          { withCredentials: true }
+        );
+        if (response.status === 201) {
+          console.log("New chat created:", response.data);
+          setChat(response.data);
+          chatId = response.data._id;
+        }
+      } catch (error) {
+        setError("Failed to create new chat.");
+        console.error("Error creating new chat:", error);
+        return; // Exit if chat creation fails
+      }
     }
 
-    console.log("chat: " + chat._id);
+    console.log("chat: " + chatId);
     try {
       const response = await API.post(
         "/messages/",
@@ -116,7 +142,9 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
         <h2>
           {user
             ? `${user.firstName} ${user.lastName}`
-            : `${chatInfo.members[1].firstName} ${chatInfo.members[1].lastName}`}
+            : chatInfo && chatInfo.members && chatInfo.members[1]
+            ? `${chatInfo.members[1].firstName} ${chatInfo.members[1].lastName}`
+            : "Chat"}
         </h2>
       </div>
       {loading ? (
@@ -149,7 +177,9 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
         />
-        <button onClick={handleMessage}></button>
+        <button onClick={handleMessage} disabled={loading || !message.trim()}>
+          Send
+        </button>
       </div>
     </div>
   );
