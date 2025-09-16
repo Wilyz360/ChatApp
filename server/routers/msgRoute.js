@@ -8,8 +8,7 @@ router.get("/:chatId", async (req, res) => {
     const { chatId } = req.params;
     const messages = await MsgModel.find({ chatId }).populate(
       "senderId",
-      "firstName lastName",
-      "-password"
+      "firstName lastName"
     );
     res.status(200).json(messages);
   } catch (error) {
@@ -28,8 +27,7 @@ router.post("/", async (req, res) => {
     await message.save();
     const populatedMessage = await message.populate(
       "senderId",
-      "firstName lastName",
-      "-password"
+      "firstName lastName"
     );
     res.status(201).json(populatedMessage);
   } catch (error) {

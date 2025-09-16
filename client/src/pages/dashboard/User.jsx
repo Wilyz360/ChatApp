@@ -15,6 +15,7 @@ const User = ({ user, setDetailComponent = null }) => {
             {user.firstName} {user.lastName}
           </h2>
           <p>Email: {user.email}</p>
+          <p>Age: {user.age}</p>
           {/* Add more user details as needed */}
         </>
       ) : (

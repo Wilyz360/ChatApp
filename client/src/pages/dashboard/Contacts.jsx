@@ -38,10 +38,12 @@ const Contacts = () => {
     fetchData();
   }, []);
 
+  // Handle initiating chat with selected user
   const handleChatButton = (user) => {
-    setDetailComponent(<Messages user={user} />);
+    setDetailComponent(<Messages currentUser={currentUser} user={user} />);
   };
 
+  // Show user details and chat option
   const handleShowUser = (user) => {
     setDetailComponent(
       <div>

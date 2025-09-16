@@ -129,3 +129,10 @@ const User = ({ id }) => {
 
 export default User;
 
+how chat view will interact with the server?
+when the user has a contact then the chat button will be available
+when user click chat button 
+  - the server will request for any existing chat between the users
+    - if chat doesnt exist. server will return 404
+      - then the client will make another request to the server, to create a chat between users
+    - if chat doest exist then it will return the chat

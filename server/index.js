@@ -60,7 +60,7 @@ app.use("/api/login", loginRoute);
 // private routes
 app.use("/api/user", authMiddleware, userRoute);
 app.use("/api/chats", authMiddleware, chatRoute);
-app.use("/api/message", authMiddleware, messageRoute);
+app.use("/api/messages", authMiddleware, messageRoute);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

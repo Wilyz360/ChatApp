@@ -15,6 +15,7 @@ const Chats = () => {
   const [error, setError] = useState(null);
 
   const handleNewChat = () => {
+    // Navigate to contacts to start a new chat
     navigate("/dashboard/contacts");
   };
 
@@ -34,10 +35,19 @@ const Chats = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    fetchChats();
-    setLoading(false);
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchChats();
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
+
+  const handleShowMessages = (chat) => {
+    console.log("Selected chat ID:", chat);
+    setDetailComponent(<Messages currentUser={currentUser} chatInfo={chat} />);
+  };
 
   return (
     <div className="list-container">
@@ -58,14 +68,14 @@ const Chats = () => {
           results.map((chat) => (
             <li
               className="list-item"
-              onClick={() => handleShowDetail(<Messages />)}
+              onClick={() => handleShowMessages(chat)}
               key={chat._id}
             >
               <div className="">
                 <span className="chat-name">
-                  <strong>{`${chat}`}: </strong>
+                  <strong>{`${chat.members[1].firstName}`}</strong>
                 </span>
-                <span className="chat-last-message">Hey, how are you?</span>
+                {/* <span className="chat-last-message"></span> */}
               </div>
             </li>
           ))}

@@ -8,8 +8,7 @@ router.get("/:userId", async (req, res) => {
     const { userId } = req.params;
     let chats = await Chat.find({ members: userId }).populate(
       "members",
-      "firstName lastName",
-      "-password"
+      "firstName lastName"
     );
 
     res.status(200).json(chats);
@@ -33,7 +32,7 @@ router.post("/", async (req, res) => {
       members: [senderId, receiverId],
     });
     await chat.save();
-    chat = await chat.populate("members", "firstName lastName", "-password");
+    chat = await chat.populate("members", "firstName lastName, -password");
     res.status(201).json(chat);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -42,14 +41,35 @@ router.post("/", async (req, res) => {
 
 // firnd chat between two users
 router.get("/find/:firstUserId/:secondUserId", async (req, res) => {
+  console.log("Finding chat between users:", req.params);
+  if (!req.params.firstUserId || !req.params.secondUserId) {
+    return res.status(400).json({ message: "Both user IDs must be provided" });
+  }
+  if (req.params.firstUserId === req.params.secondUserId) {
+    return res
+      .status(400)
+      .json({ message: "Cannot find chat with the same user ID" });
+  }
   try {
     const { firstUserId, secondUserId } = req.params;
+    console.log(
+      `Searching for chat between ${firstUserId} and ${secondUserId}`
+    );
     const chat = await Chat.findOne({
       members: { $all: [firstUserId, secondUserId] },
-    }).populate("members", "firstName lastName", "-password");
+    }).populate("members", "firstName lastName");
     if (!chat) {
-      return res.status(404).json({ message: "Chat not found" });
+      console.log(
+        `No chat found between users ${firstUserId} and ${secondUserId}`
+      );
+      return res
+        .status()
+        .json({ message: "No chat found between the two users" }); // Return false if no chat found
     }
+    console.log(
+      `Chat found between users ${firstUserId} and ${secondUserId}:`,
+      chat
+    );
     res.status(200).json(chat);
   } catch (error) {
     res.status(500).json({ message: error.message });
