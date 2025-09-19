@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api/api";
+import { useSocket } from "../../socket/SocketProvider";
 
 const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
+  const socket = useSocket(); // Get socket instance from context
+  console.log("Messages component rendered, socket:", socket);
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState("");
   const [listMessages, setListMessages] = useState([]);
@@ -87,6 +90,16 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
     getMessages();
   }, [chat]); // only refetch if chat changes
 
+  useEffect(() => {
+    if (!socket) return; // wait for socket to be set
+
+    socket.on("message", (msg) => {
+      // Listen for incoming messages
+      setListMessages((prevMessages) => [...prevMessages, msg]);
+    });
+    return () => socket.off("message");
+  });
+
   const handleMessage = async (e) => {
     e.preventDefault();
 
@@ -128,12 +141,13 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
         },
         { withCredentials: true }
       );
-      setMessage("");
       console.log("Message sent successfully:", response.data);
+      socket.emit("message", response.data); // Emit message via socket
     } catch (error) {
       console.error("Error sending message:", error);
       setError(error.message);
     }
+    setMessage("");
   };
 
   return (
@@ -159,7 +173,7 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
               listMessages.map((message) => (
                 <div key={message._id} className="message">
                   <p>
-                    <strong>{message.senderId.firstName}:</strong>{" "}
+                    {/* <strong>{message.senderId.firstName}:</strong>{" "} */}
                     {message.text}
                   </p>
                 </div>
