@@ -18,8 +18,8 @@ const userSchema = new moongose.Schema({
     type: String,
     required: true,
   },
-  age: {
-    type: Number,
+  dob: {
+    type: String,
     default: null,
   },
   gender: {

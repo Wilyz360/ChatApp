@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { NavLink, Outlet, useNavigate, Routes, Route } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import User from "./User";
+import EditProfile from "../../components/EditProfile";
 import "../../styles/dashboard.css"; // Assuming you have a CSS file for styling
 
 const Dashboard = () => {
@@ -10,8 +11,21 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [detailComponent, setDetailComponent] = useState(null);
 
+  const handleEditProfile = () => {
+    setDetailComponent(
+      <EditProfile user={user} setDetailComponent={setDetailComponent} />
+    );
+  };
+
   const handleShowUser = (user) => {
-    setDetailComponent(<User user={user} />);
+    setDetailComponent(
+      <div>
+        <User user={user} />
+        <button type="button" onClick={handleEditProfile}>
+          Edit Profile
+        </button>
+      </div>
+    );
   };
 
   const handleSearch = (e) => {

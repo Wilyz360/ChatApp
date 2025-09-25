@@ -92,11 +92,10 @@ router.get("/search/:search", async (req, res) => {
 });
 
 // update user by id
-router.put("/:id", async (req, res) => {
+router.put("/edit/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, password, avatar, age, gender } =
-      req.body;
+    const { firstName, lastName, dob, gender } = req.body;
     let user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -107,15 +106,14 @@ router.put("/:id", async (req, res) => {
         user.firstName = firstName;
       case lastName !== undefined:
         user.lastName = lastName;
-      case email !== undefined:
-        user.email = email;
-      case password !== undefined:
-        user.password = password;
-      case avatar !== undefined:
-        user.avatar = avatar;
-      case age !== undefined:
-        user.age = age;
+      case dob !== undefined:
+        user.dob = dob;
+      case gender !== undefined:
+        user.gender = gender;
     }
+
+    await user.save();
+    res.status(200).json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });

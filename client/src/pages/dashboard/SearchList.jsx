@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useOutletContext, useParams } from "react-router-dom";
 import { setUser } from "../../features/authSlice";
 import User from "./User";
+import Messages from "./Messages";
 import API from "../../api/api";
 import "../../styles/list.css"; // Assuming you have a CSS file for styling
 
@@ -42,7 +43,7 @@ const SearchList = () => {
     if (query) {
       fetchSearchResults(query);
     }
-  }, [query]);
+  }, [query, currentUser]);
   console.log("Search results:", results);
 
   const handleAddContact = async (user) => {
@@ -59,7 +60,12 @@ const SearchList = () => {
         dispatch(setUser({ ...currentUser, contacts: updatedContacts }));
         console.log("Contact added successfully:", response.data);
         // Optionally update the UI or state here
-        setDetailComponent(<User user={user} />);
+        setDetailComponent(
+          <div>
+            <User user={user} />
+            <button onClick={() => handleChatButton(user)}>Chat</button>
+          </div>
+        );
       }
     } catch (error) {
       console.error("Error adding contact:", error);
@@ -67,13 +73,24 @@ const SearchList = () => {
     }
   };
 
+  const handleChatButton = (user) => {
+    setDetailComponent(<Messages currentUser={currentUser} user={user} />);
+  };
+
+  // Show user details and chat or add contact option
+
   const handleShowUser = (user) => {
     const isContact = currentUser.contacts.includes(user._id);
     isContact
-      ? setDetailComponent(<User user={user} />)
+      ? setDetailComponent(
+          <div>
+            <User user={user} />
+            <button onClick={() => handleChatButton(user)}>Chat</button>
+          </div>
+        )
       : setDetailComponent(
           <div>
-            <User user={user} setDetailComponent={setDetailComponent} />
+            <User user={user} />
             <button onClick={() => handleAddContact(user)}>Add</button>
           </div>
         );

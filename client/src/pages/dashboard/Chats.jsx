@@ -73,7 +73,11 @@ const Chats = () => {
             >
               <div className="">
                 <span className="chat-name">
-                  <strong>{`${chat.members[1].firstName}`}</strong>
+                  <strong>
+                    {currentUser._id === chat.members[0]._id
+                      ? `${chat.members[1].firstName} ${chat.members[1].lastName}`
+                      : `${chat.members[0].firstName} ${chat.members[0].lastName}`}
+                  </strong>
                 </span>
                 {/* <span className="chat-last-message"></span> */}
               </div>

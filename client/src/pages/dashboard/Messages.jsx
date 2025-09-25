@@ -156,9 +156,12 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
         <h2>
           {user
             ? `${user.firstName} ${user.lastName}`
-            : chatInfo && chatInfo.members && chatInfo.members[1]
+            : chatInfo &&
+              chatInfo.members &&
+              chatInfo.members[1] &&
+              currentUser._id === chatInfo.members[0]._id
             ? `${chatInfo.members[1].firstName} ${chatInfo.members[1].lastName}`
-            : "Chat"}
+            : `${chatInfo.members[0].firstName} ${chatInfo.members[0].lastName}`}
         </h2>
       </div>
       {loading ? (
@@ -173,7 +176,12 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
               listMessages.map((message) => (
                 <div key={message._id} className="message">
                   <p>
-                    {/* <strong>{message.senderId.firstName}:</strong>{" "} */}
+                    <strong>
+                      {currentUser.firstName === message.senderId.firstName
+                        ? "You"
+                        : message.senderId.firstName}
+                      :
+                    </strong>{" "}
                     {message.text}
                   </p>
                 </div>

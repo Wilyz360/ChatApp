@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useOutletContext } from "react-router-dom";
-import Messages from "./Messages";
-import API from "../../api/api";
+import React from "react";
 
-const User = ({ user, setDetailComponent = null }) => {
-  const { id } = useParams();
-  console.log("User ID:", user._id);
-
+const User = ({ user }) => {
   return (
     <div className="user-profile">
       {user ? (
@@ -15,11 +9,13 @@ const User = ({ user, setDetailComponent = null }) => {
             {user.firstName} {user.lastName}
           </h2>
           <p>Email: {user.email}</p>
-          <p>Age: {user.age}</p>
+          <p>Dob: {!user.dob ? "required" : user.dob}</p>
+          <p>Gender: {!user.gender ? "required" : user.gender}</p>
+
           {/* Add more user details as needed */}
         </>
       ) : (
-        <p>Loading user data...</p>
+        <p>No user data available.</p>
       )}
     </div>
   );
