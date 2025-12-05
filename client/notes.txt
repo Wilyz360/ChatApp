@@ -1,0 +1,167 @@
+Routes:
+- /home
+    - /login
+        (Private)
+        - /dashboard
+            - /dashboard/profile
+            - /dashboard/chats
+                - /dashboard/chats/:chatId
+            - /dashboard/contacts
+                - /dashboard/contacts/contactId
+            - /dashboard/settings
+            - /dashboard/search/:username
+    - /signup
+
+Pages:
+p\Public pages:
+- /home
+- /login
+- /signup
+
+Private pages:
+- /dashboard
+    - /dashboard/profile
+    - /dashboard/chats
+        - /dashboard/chats/:chatId
+    - /dashboard/contacts
+        - /dashboard/contacts/contactId
+    - /dashboard/settings
+    - /dashboard/search/:username
+        - /dashboard/profile/:id
+
+
+notes:
+
+<li
+          className="list-item"
+          onClick={() =>
+            handleShowDetail(<User user={{ firstName: "Alice", email: "" }} />)
+          }
+        >
+          Alice
+        </li>
+
+
+
+
+import React, { use, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setUser } from "../../features/authSlice";
+import API from "../../api/api";
+import Messages from "./Messages";
+
+const User = ({ id }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const currentUser = useSelector((state) => state.auth.user);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [sent, setSent] = useState(false);
+  const [isAlreadyContact, setIsAlreadyContact] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser || !user) return;
+    const isContact = currentUser.contacts.some(
+      (contact) =>
+        (typeof contact === "object" && contact._id === user._id) ||
+        (typeof contact === "string" && contact === user._id)
+    );
+    setIsAlreadyContact(isContact);
+  }, [user, currentUser]);
+
+  const handleButtton = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await API.post(
+        "/user/contact/add",
+        { userId: currentUser._id, contactId: user._id },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        alert("Friend request sent successfully!");
+        const updateUser = await API.get(`/user/${currentUser._id}`, {
+          withCredentials: true,
+        });
+        dispatch(setUser(updateUser.data));
+        console.log("Current user updated successfully!");
+        setSent(true);
+      }
+    } catch (err) {
+      setError("Failed to send friend request.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMessageClick = () => {
+    navigate(`/dashboard/messages`);
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">{`${user.firstName} ${user.lastName}`}</h2>
+      <div className="border p-4 rounded shadow">
+        <p className="text-gray-600">Email: {user.email}</p>
+        <p className="text-gray-600">Age: {user.age}</p>
+        <p className="text-gray-600">Gender: {user.gender}</p>
+        {/* if search button is cliked*/}
+        {currentUser &&
+        currentUser._id !== user._id &&
+        !sent &&
+        !isAlreadyContact ? (
+          <button
+            onClick={handleButtton}
+            disabled={loading}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {loading ? "Sending..." : "Add"}
+          </button>
+        ) : isAlreadyContact ? (
+          <button onClick={handleMessageClick}>Message</button>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+export default User;
+
+how chat view will interact with the server?
+when the user has a contact then the chat button will be available
+when user click chat button 
+  - the server will request for any existing chat between the users
+    - if chat doesnt exist. server will return 404
+      - then the client will make another request to the server, to create a chat between users
+    - if chat doest exist then it will return the chat
+
+
+
+const handleRequest = async (user) => {
+    try {
+      const response = await API.post(
+        `/user/contact/add`,
+        { userId: currentUser._id, contactId: user._id },
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        alert("Friend request sent successfully!");
+        // Update the current user's contacts in the Redux store
+        const updatedContacts = [...currentUser.contacts, user._id];
+        dispatch(setUser({ ...currentUser, contacts: updatedContacts }));
+        console.log("Contact added successfully:", response.data);
+        // Optionally update the UI or state here
+        setDetailComponent(
+          <div>
+            <User user={user} />
+            <button onClick={() => handleChatButton(user)}>Chat</button>
+          </div>
+        );
+      }
+    } catch (error) {
+      console.error("Error adding contact:", error);
+      // Optionally set an error state here
+    }
+  };

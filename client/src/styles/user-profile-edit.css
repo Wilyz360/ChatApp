@@ -1,0 +1,59 @@
+.user-profile-edit {
+  background: #23272f;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  padding: 32px 24px;
+  max-width: 400px;
+  margin: 32px auto;
+  color: #f1f1f1;
+}
+
+.user-profile-edit form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.user-profile-edit label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #90cdf4;
+}
+
+.user-profile-edit input[type="text"],
+.user-profile-edit input[type="number"],
+.user-profile-edit input[type="password"] {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #2d3748;
+  background: #1a1d23;
+  color: #f1f1f1;
+  margin-top: 4px;
+  font-size: 1rem;
+}
+
+.user-profile-edit input:focus {
+  outline: 2px solid #3182ce;
+}
+
+.user-profile-edit button {
+  background: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background 0.2s;
+}
+
+.user-profile-edit button[type="button"] {
+  background: #718096;
+}
+
+.user-profile-edit button:hover {
+  background: #2563eb;
+}
