@@ -13,6 +13,7 @@ const SearchList = () => {
   const currentUser = useSelector((state) => state.auth.user);
   const { query } = useParams();
   console.log("Search term:", query);
+  const [isRequested, setIsRxequested] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -66,6 +67,7 @@ const SearchList = () => {
       console.log("Friend request sent", response.data);
 
       // Optionally update UI or state here
+      handleShowUser(user, updatedUser); // Clear detail component after sending request
     } catch (error) {
       setError("Failed to send friend request.");
       console.error("Error sending friend request:", error);
@@ -78,9 +80,13 @@ const SearchList = () => {
 
   // Show user details and chat or add contact option
 
-  const handleShowUser = (user) => {
+  const handleShowUser = (user, updatedUser = null) => {
     const isContact = currentUser.contacts.includes(user._id); // Check if user is already a contact
-    const isRequested = currentUser.sentRequests.includes(user._id); // Check if request is sent
+    const isRequested = updatedUser
+      ? updatedUser
+      : currentUser.sentRequests.includes(user._id); // Check if request is sent
+    console.log("Is contact:", isContact);
+    console.log("Is requested:", isRequested);
     isContact
       ? setDetailComponent(
           <div>
