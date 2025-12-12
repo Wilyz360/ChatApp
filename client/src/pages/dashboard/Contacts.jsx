@@ -112,7 +112,10 @@ const Contacts = () => {
             >
               <div className="list-name">
                 <strong>
-                  {contact.firstName} {contact.lastName}
+                  {contact.firstName.charAt(0).toUpperCase() +
+                    contact.firstName.slice(1)}{" "}
+                  {contact.lastName.charAt(0).toUpperCase() +
+                    contact.lastName.slice(1)}
                 </strong>
               </div>
             </li>

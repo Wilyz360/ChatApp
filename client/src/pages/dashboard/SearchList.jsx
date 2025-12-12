@@ -122,7 +122,10 @@ const SearchList = () => {
             >
               <div className="list-name">
                 <strong>
-                  {user.firstName} {user.lastName}
+                  {user.firstName.charAt(0).toUpperCase(0) +
+                    user.firstName.slice(1)}{" "}
+                  {user.lastName.charAt(0).toUpperCase() +
+                    user.lastName.slice(1)}
                 </strong>
               </div>
             </li>

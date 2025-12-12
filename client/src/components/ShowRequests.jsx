@@ -5,38 +5,86 @@ import User from "../pages/dashboard/User";
 import Messages from "../pages/dashboard/Messages";
 import API from "../api/api";
 
-function ShowRequests({ requests, setDetailComponent }) {
+function ShowRequests({ requests: initialRequests, setDetailComponent }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.user);
-  const [isAccepted, setIsAccepted] = useState(false);
+  const [requests, setRequests] = useState(initialRequests || []);
+  const fromList = false;
+
+  useEffect(() => {
+    setRequests(initialRequests || []);
+  }, [initialRequests]);
+
   const handleRequestClick = (request) => {
     setDetailComponent(
       <div>
         <User user={request} />
-        {!isAccepted ? (
-          <div>
-            <button onClick={() => handleAccept(request._id)}>Accept</button>{" "}
-            <button onClick={() => handleReject(request._id)}>Reject</button>
-          </div>
-        ) : (
-          <div>
-            <button>Chat</button>
-          </div>
-        )}
+        <div>
+          <button onClick={() => handleAccept(request)}>Accept</button>{" "}
+          <button onClick={() => handleReject(request._id)}>Reject</button>
+        </div>
       </div>
     );
   };
 
-  const handleAccept = async (requestId) => {
-    console.log("Accepting request:", requestId);
+  const handleAccept = async (request, fromList = false) => {
+    console.log("Accepting request:", request._id);
+    try {
+      const response = await API.post("/user/request/respond", {
+        userId: currentUser._id,
+        requestId: request._id,
+        action: "accept",
+      });
 
-    setDetailComponent(<div>Accepted! You can now chat.</div>);
+      if (response.status !== 200) {
+        throw new Error("Failed to accept friend request.");
+      }
+      console.log("Response data:", response.data);
+      const updatedUser = response.data.user;
+      dispatch({ type: "auth/setUser", payload: updatedUser });
+      fromList
+        ? setRequests(requests.filter((req) => req._id !== request._id))
+        : setDetailComponent(
+            <>
+              <User user={updatedUser} User />{" "}
+              <div>
+                <button onClick={() => handleChatButton(request)}>Chat</button>
+              </div>
+            </>
+          );
+      console.log("Friend request accepted:", response.data);
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+    }
   };
 
-  const handleReject = async (requestId) => {
-    console.log("Rejecting request:", requestId);
-    setIsAccepted(false);
+  const handleChatButton = (user) => {
+    setDetailComponent(<Messages currentUser={currentUser} user={user} />);
+  };
+
+  const handleReject = async (request, fromList = false) => {
+    console.log("Rejecting request:", request);
+    try {
+      const response = await API.post("/user/request/respond", {
+        userId: currentUser._id,
+        requestId: request._id,
+        action: "reject",
+      });
+
+      if (response.status !== 200) {
+        throw new Error("Failed to reject friend request.");
+      }
+
+      console.log("Response data:", response.data);
+      const updatedUser = response.data.user;
+      dispatch({ type: "auth/setUser", payload: updatedUser });
+      fromList
+        ? setRequests(requests.filter((req) => req._id !== request._id))
+        : setDetailComponent(<User user={updatedUser} />);
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+    }
   };
 
   return (
@@ -56,8 +104,12 @@ function ShowRequests({ requests, setDetailComponent }) {
                   {req.firstName} {req.lastName}
                 </div>
                 <div>
-                  <button onClick={() => handleAccept(req._id)}>Accept</button>{" "}
-                  <button onClick={() => handleReject(req._id)}>Reject</button>
+                  <button onClick={() => handleAccept(req, !fromList)}>
+                    Accept
+                  </button>{" "}
+                  <button onClick={() => handleReject(req, !fromList)}>
+                    Reject
+                  </button>
                 </div>
               </li>
             ))}

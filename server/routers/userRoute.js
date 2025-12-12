@@ -51,7 +51,7 @@ router.get("/search/:search", async (req, res) => {
   try {
     const search = req.params.search;
     console.log("Search term:", search);
-    const [first, second] = search.toLowerCase().split(" ");
+    const [first, second] = search.toLowerCase().split(" "); // Split into first and last name and convert to lowercase
 
     let query = {};
 
@@ -143,6 +143,61 @@ router.post("/request", async (req, res) => {
   }
 });
 
+// accept or reject request
+router.post("/request/respond", async (req, res) => {
+  console.log("Responding to friend request with data:", req.body);
+  try {
+    const { userId, requestId, action } = req.body;
+    const user = await User.findById(userId);
+    const requestUser = await User.findById(requestId);
+
+    if (!user || !requestUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (action === "accept") {
+      // Add each other to contacts
+      if (!user.contacts.includes(requestId)) {
+        user.contacts.push(requestId);
+      }
+      if (!requestUser.contacts.includes(userId)) {
+        requestUser.contacts.push(userId);
+      }
+      // Remove from received and sent requests
+      user.receivedRequests = user.receivedRequests.filter(
+        (reqId) => reqId.toString() !== requestId
+      );
+      requestUser.sentRequests = requestUser.sentRequests.filter(
+        (reqId) => reqId.toString() !== userId
+      );
+    }
+    if (action === "reject") {
+      // Remove from received and sent requests
+      user.receivedRequests = user.receivedRequests.filter(
+        (reqId) => reqId.toString() !== requestId
+      );
+      requestUser.sentRequests = requestUser.sentRequests.filter(
+        (reqId) => reqId.toString() !== userId
+      );
+    }
+
+    if (action !== "accept" && action !== "reject") {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    await user.save();
+    await requestUser.save();
+
+    user.password = undefined;
+
+    res
+      .status(200)
+      .json({ message: `Request ${action}ed successfully`, user: user });
+  } catch (error) {
+    console.error("Error responding to friend request:", error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // update user by id
 router.put("/edit/:id", async (req, res) => {
   try {
@@ -224,10 +279,10 @@ router.post("/contact/:id", async (req, res) => {
     if (!contact) {
       return res.status(404).json({ message: "Contact not found" });
     }
-    if (!user.contact.includes(contactId)) {
+    if (!user.contacts.includes(contactId)) {
       return res.status(400).json({ message: "Contact does not exist" });
     }
-    user.contact = user.contact.filter(
+    user.contacts = user.contacts.filter(
       (contact) => contact.toString() !== contactId
     );
     await user.save();
