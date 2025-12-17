@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -12,7 +12,7 @@ import Settings from "./pages/dashboard/Settings";
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  return isAuthenticated ? children : <Login />;
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 function App() {

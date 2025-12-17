@@ -44,21 +44,19 @@ const Dashboard = () => {
 
         <ul className="dashboard-nav-list">
           <li className="search-bar">
-            <input
-              className="search-text"
-              type="text"
-              name="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search..."
-            />
-            <button
-              onClick={handleSearch}
-              type="button"
-              className="search-button"
-            >
-              Search
-            </button>
+            <form onSubmit={handleSearch}>
+              <input
+                className="search-text"
+                type="text"
+                name="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search..."
+              />
+              <button type="submit" className="search-button">
+                Search
+              </button>
+            </form>
           </li>
           <li className="nav-item">
             <button type="button" onClick={() => handleShowUser(user)}>

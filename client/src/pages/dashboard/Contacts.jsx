@@ -16,7 +16,6 @@ const Contacts = () => {
   const [chatError, setChatError] = useState(null);
   const [contactList, setContactList] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [chat, setChat] = useState(null);
 
   // Fetch contacts from the server
   const fetchContacts = async () => {
@@ -84,6 +83,7 @@ const Contacts = () => {
   // Handle initiating chat with selected user
   const handleChatButton = async (user) => {
     setLoadingChat(true);
+    setChatError(null);
     try {
       const response = await API.get(
         `/chats/find/${currentUser._id}/${user._id}`,
@@ -100,7 +100,6 @@ const Contacts = () => {
       }
 
       console.log("Chats fetched successfully:", response.data.message);
-      setChat(response.data.chat);
       setDetailComponent(
         <Messages currentUser={currentUser} chat={response.data.chat} />
       );
@@ -122,7 +121,7 @@ const Contacts = () => {
       <div>
         <User user={user} setDetailComponent={setDetailComponent} />
         <button onClick={() => handleChatButton(user)}>
-          {loadingChat ? "working..." : "chat"}
+          {loadingChat ? "Working..." : "Chat"}
         </button>
         {chatError && <p style={{ color: "red" }}>{chatError}</p>}
       </div>

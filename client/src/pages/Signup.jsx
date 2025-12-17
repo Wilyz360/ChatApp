@@ -21,12 +21,14 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
+    setLoading(true);
+    setError(null);
+
     console.log("Form Data:", formData);
 
     try {
@@ -47,6 +49,7 @@ const Signup = () => {
         confirmPassword: "",
       });
       // Redirect to login page or show success message
+      setLoading(false);
       navigate("/login");
     } catch (error) {
       setLoading(false);
@@ -102,13 +105,7 @@ const Signup = () => {
           required
           name="confirmPassword"
         />
-        {loading ? (
-          <button type="submit" disabled>
-            Loading...
-          </button>
-        ) : (
-          <button type="submit">Signup</button>
-        )}
+        <button type="submit">{loading ? "Working" : "Signup"}</button>
 
         <p>
           Already have an account? <a href="/login">Login</a>
