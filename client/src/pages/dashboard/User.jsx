@@ -7,7 +7,7 @@ const User = ({ user }) => {
         <>
           <h2>
             {user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)}{" "}
-            {user.lastName}
+            {user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)}
           </h2>
           <p>Email: {user.email}</p>
           <p>Dob: {!user.dob ? "required" : user.dob}</p>

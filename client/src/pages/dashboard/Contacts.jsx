@@ -21,33 +21,49 @@ const Contacts = () => {
       const response = await API.get(`/user/contacts/${currentUser._id}`, {
         withCredentials: true,
       });
-      if (response.status === 200) {
-        console.log("Contacts fetched successfully:", response.data);
-        setContactList(response.data);
+
+      if (response.status !== 200) {
+        // Check for successful response
+        throw new Error(response.data);
       }
+
+      console.log("Contacts fetched successfully:", response.data.message);
+      setContactList(response.data.contacts); // Updated to match the new response structure
     } catch (error) {
-      setError("An error occurred while fetching contacts");
-      console.error("Error fetching contacts:", error);
+      // Handle errors
+      setError(
+        error.response?.data || "An error occurred while fetching contacts"
+      );
+      console.error(
+        "Error fetching contacts:",
+        error.response?.data || "An error occurred while fetching contacts"
+      );
     }
   };
 
   // Fetch friend requests from the server
   const fetchRequests = async () => {
     try {
-      const { data: response } = await API.get(
-        `/user/requests/${currentUser._id}`,
-        {
-          withCredentials: true,
-        }
-      );
-      if (!response) {
-        throw new Error("Failed to fetch requests");
+      const response = await API.get(`/user/requests/${currentUser._id}`, {
+        withCredentials: true,
+      });
+      if (response.status !== 200) {
+        // Check for successful response
+        throw new Error(response.data);
       }
-      setRequests(response.receivedRequests || []);
-      console.log("Requests fetched successfully:", response.receivedRequests);
+      setRequests(response.data.receivedRequests || []);
+      console.log(
+        "Requests fetched successfully:",
+        response.data.receivedRequests
+      );
     } catch (error) {
-      console.error("Error fetching requests:", error);
-      setError("Failed to fetch requests.");
+      console.error(
+        "Error fetching requests:",
+        error.response?.data || "An error occurred while fetching requests"
+      );
+      setError(
+        error.response?.data || "An error occurred while fetching requests"
+      );
     }
   };
 
@@ -77,7 +93,7 @@ const Contacts = () => {
     );
   };
 
-  const handleRequest = () => {
+  const retrieveRequests = () => {
     setDetailComponent(
       <ShowRequests
         requests={requests}
@@ -90,37 +106,40 @@ const Contacts = () => {
     <div className="list-container">
       <h2>Friends</h2>
       <div>
-        <button type="button" onClick={handleRequest}>
-          Friend Requests ({requests.length})
-        </button>
+        <div>
+          {loading && <p>Loading contacts...</p>}
+          <button type="button" onClick={retrieveRequests}>
+            Friend Requests ({requests.length})
+          </button>
+        </div>
       </div>
-
-      <ul className="list-list">
-        {loading && <p>Loading contacts...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {!loading && !error && contactList.length === 0 && (
-          <p>No contacts found.</p>
-        )}
-        {!loading &&
-          !error &&
-          contactList.map((contact) => (
-            <li
-              onClick={() => handleShowUser(contact)}
-              key={contact._id}
-              style={{ marginBottom: "10px" }}
-              className="list-item"
-            >
-              <div className="list-name">
-                <strong>
-                  {contact.firstName.charAt(0).toUpperCase() +
-                    contact.firstName.slice(1)}{" "}
-                  {contact.lastName.charAt(0).toUpperCase() +
-                    contact.lastName.slice(1)}
-                </strong>
-              </div>
-            </li>
-          ))}
-      </ul>
+      <div>
+        <ul className="list-list">
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {!loading && !error && contactList.length === 0 && (
+            <p>No contacts found.</p>
+          )}
+          {!loading &&
+            !error &&
+            contactList.map((contact) => (
+              <li
+                onClick={() => handleShowUser(contact)}
+                key={contact._id}
+                style={{ marginBottom: "10px" }}
+                className="list-item"
+              >
+                <div className="list-name">
+                  <strong>
+                    {contact.firstName.charAt(0).toUpperCase() +
+                      contact.firstName.slice(1)}{" "}
+                    {contact.lastName.charAt(0).toUpperCase() +
+                      contact.lastName.slice(1)}
+                  </strong>
+                </div>
+              </li>
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };

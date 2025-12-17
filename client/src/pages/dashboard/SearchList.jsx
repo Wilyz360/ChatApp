@@ -13,7 +13,6 @@ const SearchList = () => {
   const currentUser = useSelector((state) => state.auth.user);
   const { query } = useParams();
   console.log("Search term:", query);
-  const [isRequested, setIsRxequested] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,13 +25,15 @@ const SearchList = () => {
         `/user/search/${encodeURIComponent(searchTerm)}`,
         { withCredentials: true }
       );
-      if (response.status === 200) {
-        setResults(response.data);
+      if (response.status !== 200) {
+        throw new Error(response.data);
       }
-    } catch (err) {
-      setError("User not found.");
-    } finally {
+
+      setResults(response.data);
       setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setError(error?.response?.data || "An error occurred");
     }
   };
 
@@ -42,7 +43,6 @@ const SearchList = () => {
     }
     setResults([]);
   }, [query, currentUser]);
-  console.log("Search results:", results);
 
   const handleRequest = async (user) => {
     try {
@@ -55,22 +55,29 @@ const SearchList = () => {
         { withCredentials: true }
       );
       if (response.status !== 200) {
-        throw new Error("Failed to send friend request.");
+        // Check for successful response
+        console.log("Response data:", response.data);
+        throw new Error(response.data || "Failed to send friend request");
       }
 
-      // Update currentUser in Redux store
+      // Update current user in Redux store
       const updatedUser = {
-        ...currentUser, // Copy existing user data
-        sentRequests: [...currentUser.sentRequests, user._id], // Add new request
+        ...currentUser,
+        sentRequests: response.data.sentRequests,
       };
-      dispatch(setUser(updatedUser));
+      dispatch(setUser(updatedUser)); // Update user in Redux store
       console.log("Friend request sent", response.data);
 
       // Optionally update UI or state here
       handleShowUser(user, updatedUser); // Clear detail component after sending request
     } catch (error) {
-      setError("Failed to send friend request.");
-      console.error("Error sending friend request:", error);
+      // Handle error
+      console.log(error.response?.data || "An error occurred");
+      handleShowUser(
+        user,
+        null,
+        error.response?.data || "An error occurred while sending request"
+      ); // Show error message in detail component
     }
   };
 
@@ -80,13 +87,13 @@ const SearchList = () => {
 
   // Show user details and chat or add contact option
 
-  const handleShowUser = (user, updatedUser = null) => {
+  const handleShowUser = (user, updatedUser = null, erroMessage = null) => {
     const isContact = currentUser.contacts.includes(user._id); // Check if user is already a contact
     const isRequested = updatedUser
       ? updatedUser
       : currentUser.sentRequests.includes(user._id); // Check if request is sent
-    console.log("Is contact:", isContact);
-    console.log("Is requested:", isRequested);
+
+    // Set detail component based on user's contact status
     isContact
       ? setDetailComponent(
           <div>
@@ -97,9 +104,17 @@ const SearchList = () => {
       : setDetailComponent(
           <div>
             <User user={user} />
-            <button onClick={() => handleRequest(user)} disabled={isRequested}>
-              {isRequested ? "Request Sent" : "Send Request"}
-            </button>
+            <div>
+              <button
+                onClick={() => handleRequest(user)}
+                disabled={isRequested}
+              >
+                {isRequested ? "Request Sent" : "Send Request"}
+              </button>
+              <div>
+                {erroMessage && <p className="text-red-500">{erroMessage}</p>}
+              </div>
+            </div>
           </div>
         );
   };
@@ -109,10 +124,7 @@ const SearchList = () => {
       <h2 className="text-2xl font-bold mb-4">Search Results</h2>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {!loading && !error && results.length === 0 && (
-        <p>No results found for "{query}".</p>
-      )}
-      {!loading && !error && results.length > 0 && (
+      {!loading && !error && (
         <ul className="list-list">
           {results.map((user) => (
             <li

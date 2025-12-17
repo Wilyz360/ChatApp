@@ -77,69 +77,72 @@ router.get("/search/:search", async (req, res) => {
       };
     }
 
-    let users = await User.find(query).select("-password -con");
+    let users = await User.find(query).select("-password"); // Exclude password and con from the response
+
+    // Check if any users were found
     if (!users || users.length === 0) {
-      return res.status(404).json({ message: "No users found" });
+      throw new Error("User not found!");
     }
-    users = users.map((user) => {
-      user.password = undefined;
-      return user;
-    });
+
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(error.message);
   }
 });
 
-// get user requests
+// get user requests by id
 router.get("/requests/:id", async (req, res) => {
   console.log("Fetching requests for user:", req.params.id);
   try {
     const { id } = req.params;
     const user = await User.findById(id).populate(
       "receivedRequests",
-      "firstName lastName email dob gender"
+      "-password"
     );
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      throw new Error("An error occurred while fetching requests");
     }
     console.log("Received requests:", user.receivedRequests);
     res.status(200).json({ receivedRequests: user.receivedRequests });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
 
+// send friend request
 router.post("/request", async (req, res) => {
-  console.log("Received friend request data:", req.body);
+  console.log("Handling sent request data:", req.body);
   const { from, to } = req.body;
   try {
     const fromUser = await User.findById(from);
     const toUser = await User.findById(to);
-    if (!fromUser || !toUser) {
-      return res.status(404).json({ message: "User not found" });
+
+    if (!fromUser.sentRequests.includes(to)) {
+      // Check if the request is already in the sentRequests array
+      fromUser.sentRequests.push(to);
+    } else {
+      throw new Error("Request already sent");
     }
 
     if (!toUser.receivedRequests.includes(from)) {
+      // Check if the request is already in the receivedRequests array
       toUser.receivedRequests.push(from);
-      await toUser.save();
     }
 
-    if (!fromUser.sentRequests.includes(to)) {
-      fromUser.sentRequests.push(to);
-      await fromUser.save();
-    }
+    // Save the updated users to the database
+    await toUser.save();
+    await fromUser.save();
 
-    // Here you would normally save the friend request to the database
+    // Log the friend request details
     console.log(`Friend request from ${fromUser.email} to ${toUser.email}`);
-    // For now, we just log the request
 
-    res
-      .status(200)
-      .json({ message: "Friend request sent", requests: req.body });
+    res.status(200).json({
+      message: "Friend request sent",
+      sentRequests: fromUser.sentRequests,
+    });
   } catch (error) {
     console.error("Error handling friend request:", error);
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
 
@@ -152,7 +155,7 @@ router.post("/request/respond", async (req, res) => {
     const requestUser = await User.findById(requestId);
 
     if (!user || !requestUser) {
-      return res.status(404).json({ message: "User not found" });
+      throw new Error("An error occurred while responding to request");
     }
     if (action === "accept") {
       // Add each other to contacts
@@ -181,7 +184,7 @@ router.post("/request/respond", async (req, res) => {
     }
 
     if (action !== "accept" && action !== "reject") {
-      return res.status(400).json({ message: "Invalid action" });
+      throw new Error("Invalid action");
     }
 
     await user.save();
@@ -193,8 +196,8 @@ router.post("/request/respond", async (req, res) => {
       .status(200)
       .json({ message: `Request ${action}ed successfully`, user: user });
   } catch (error) {
-    console.error("Error responding to friend request:", error);
-    res.status(500).json({ message: error.message });
+    console.error("Error responding to friend request:", error.message);
+    res.status(500).send(error.message);
   }
 });
 
@@ -205,7 +208,8 @@ router.put("/edit/:id", async (req, res) => {
     const { firstName, lastName, dob, gender } = req.body;
     let user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      //return res.status(404).json({ message: "User not found" });
+      throw new Error("User not found");
     }
 
     switch (true) {
@@ -220,10 +224,10 @@ router.put("/edit/:id", async (req, res) => {
     }
 
     await user.save();
-    res.status(200).json(user);
+    res.status(200).json({ user: user, message: "User updated successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    res.status(500).send(error.message);
   }
 });
 
@@ -233,18 +237,21 @@ router.get("/contacts/:id", async (req, res) => {
     const { id } = req.params;
     let user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      throw new Error("An error occurred while fetching contacts");
     }
     let contacts = await User.find({ _id: { $in: user.contacts } });
     contacts = contacts.map((contact) => {
       contact.password = undefined;
       return contact;
     });
-    res.status(200).json(contacts);
+    res
+      .status(200)
+      .json({ contacts: contacts, message: "Contacts fetched successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
+
 // add user to contact list
 router.post("/contact/add", async (req, res) => {
   try {

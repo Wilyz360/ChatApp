@@ -75,8 +75,20 @@ const Chats = () => {
                 <span className="chat-name">
                   <strong>
                     {currentUser._id === chat.members[0]._id
-                      ? `${chat.members[1].firstName} ${chat.members[1].lastName}`
-                      : `${chat.members[0].firstName} ${chat.members[0].lastName}`}
+                      ? `${
+                          chat.members[1].firstName.charAt(0).toUpperCase() +
+                          chat.members[1].firstName.slice(1)
+                        } ${
+                          chat.members[1].lastName.charAt(0).toUpperCase() +
+                          chat.members[1].lastName.slice(1)
+                        }`
+                      : `${
+                          chat.members[0].firstName.charAt(0).toUpperCase() +
+                          chat.members[0].firstName.slice(1)
+                        } ${
+                          chat.members[0].lastName.charAt(0).toUpperCase() +
+                          chat.members[0].lastName.slice(1)
+                        }`}
                     {": "}
                   </strong>
                 </span>

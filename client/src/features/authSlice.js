@@ -12,12 +12,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loginStart: (state) => {
+      // Set loading to true and clear any previous errors
       state.loading = true;
       state.error = null;
     },
     loginSuccess: (state, action) => {
-      (state.loading = false),
-        (state.isAuthenticated = true),
+      // Set user data and update state
+      (state.isAuthenticated = true),
         (state.user = action.payload),
         (state.error = null);
 
@@ -25,6 +26,7 @@ const authSlice = createSlice({
       localStorage.setItem("user", JSON.stringify(action.payload));
     },
     loginFailure: (state, action) => {
+      // Set error and update state
       state.loading = false;
       state.error = action.payload;
     },

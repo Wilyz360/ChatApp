@@ -33,7 +33,7 @@ const Dashboard = () => {
     if (search.trim()) {
       navigate(`/dashboard/search/${encodeURIComponent(search.trim())}`);
       setSearch("");
-      setDetailComponent(null); // Clear detail view on new search
+      //setDetailComponent(null); // Clear detail view on new search
     }
   };
 

@@ -179,7 +179,8 @@ const Messages = ({ currentUser = null, user = null, chatInfo = null }) => {
                     <strong>
                       {currentUser.firstName === message.senderId.firstName
                         ? "You"
-                        : message.senderId.firstName}
+                        : message.senderId.firstName.charAt(0).toUpperCase() +
+                          message.senderId.firstName.slice(1)}
                       :
                     </strong>{" "}
                     {message.text}

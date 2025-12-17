@@ -10,6 +10,8 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.user);
   const [requests, setRequests] = useState(initialRequests || []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const fromList = false;
 
   useEffect(() => {
@@ -21,8 +23,13 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
       <div>
         <User user={request} />
         <div>
-          <button onClick={() => handleAccept(request)}>Accept</button>{" "}
-          <button onClick={() => handleReject(request._id)}>Reject</button>
+          <button onClick={() => handleAccept(request)}>
+            {loading ? "Accepting" : "Accept"}
+          </button>{" "}
+          <button onClick={() => handleReject(request)}>
+            {loading ? "Rejecting" : "Reject"}
+          </button>
+          {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
       </div>
     );
@@ -30,6 +37,7 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
 
   const handleAccept = async (request, fromList = false) => {
     console.log("Accepting request:", request._id);
+    setLoading(true);
     try {
       const response = await API.post("/user/request/respond", {
         userId: currentUser._id,
@@ -38,13 +46,14 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
       });
 
       if (response.status !== 200) {
-        throw new Error("Failed to accept friend request.");
+        throw new Error(response?.data || "Failed to accept friend request.");
       }
       console.log("Response data:", response.data);
       const updatedUser = response.data.user;
-      dispatch({ type: "auth/setUser", payload: updatedUser });
+      dispatch({ type: "auth/setUser", payload: updatedUser }); // update redux store
+      setLoading(false);
       fromList
-        ? setRequests(requests.filter((req) => req._id !== request._id))
+        ? setRequests(requests.filter((req) => req._id !== request._id)) // remove from list
         : setDetailComponent(
             <>
               <User user={updatedUser} User />{" "}
@@ -53,18 +62,24 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
               </div>
             </>
           );
-      console.log("Friend request accepted:", response.data);
+      console.log("Friend request accepted:", response.data.message);
     } catch (error) {
-      console.error("Error accepting friend request:", error);
+      console.error(
+        "Error accepting friend request:",
+        error?.response?.data || "An error occurred while accepting."
+      );
+      setLoading(false);
+      setError(error?.response?.data || "An error occurred while accepting.");
     }
   };
 
-  const handleChatButton = (user) => {
-    setDetailComponent(<Messages currentUser={currentUser} user={user} />);
+  const handleChatButton = (request) => {
+    setDetailComponent(<Messages currentUser={currentUser} user={request} />);
   };
 
   const handleReject = async (request, fromList = false) => {
     console.log("Rejecting request:", request);
+    setLoading(true);
     try {
       const response = await API.post("/user/request/respond", {
         userId: currentUser._id,
@@ -73,17 +88,25 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
       });
 
       if (response.status !== 200) {
-        throw new Error("Failed to reject friend request.");
+        throw new Error(response?.data || "Failed to reject friend request.");
       }
 
-      console.log("Response data:", response.data);
+      console.log("Response data:", response.data.message);
       const updatedUser = response.data.user;
       dispatch({ type: "auth/setUser", payload: updatedUser });
+      setLoading(false);
       fromList
         ? setRequests(requests.filter((req) => req._id !== request._id))
         : setDetailComponent(<User user={updatedUser} />);
     } catch (error) {
-      console.error("Error rejecting friend request:", error);
+      console.error(
+        "Error rejecting friend request:",
+        error?.response?.data || "An error occurred while rejecting the request"
+      );
+      setLoading(false);
+      setError(
+        error?.response?.data || "An error occurred while rejecting the request"
+      );
     }
   };
 
@@ -101,15 +124,18 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
                   onClick={handleRequestClick.bind(null, req)}
                   style={{ cursor: "pointer", marginBottom: "10px" }}
                 >
-                  {req.firstName} {req.lastName}
+                  {req.firstName.charAt(0).toUpperCase() +
+                    req.firstName.slice(1)}{" "}
+                  {req.lastName.charAt(0).toUpperCase() + req.lastName.slice(1)}
                 </div>
                 <div>
                   <button onClick={() => handleAccept(req, !fromList)}>
-                    Accept
+                    {loading ? "Accepting" : "Accept"}
                   </button>{" "}
                   <button onClick={() => handleReject(req, !fromList)}>
-                    Reject
+                    {loading ? "Rejecting" : "Reject"}
                   </button>
+                  {error && <p style={{ color: "red" }}>{error}</p>}
                 </div>
               </li>
             ))}

@@ -12,6 +12,8 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,6 +21,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
@@ -28,29 +31,36 @@ const Signup = () => {
 
     try {
       const response = await API.post("/signup", formData);
-      if (response.status === 201) {
-        console.log("Signup successful:", response.data);
-        alert("Signup successful! Please log in.");
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-        navigate("/login");
+
+      if (response.status !== 201) {
+        console.log("User already exists:", response.data);
+        throw new Error(response.data.message);
       }
+      console.log("Signup successful:", response.data);
+
+      //alert("Signup successful! Please log in.");
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      // Redirect to login page or show success message
+      navigate("/login");
     } catch (error) {
-      console.error("Signup failed:", error);
-      // Handle error, e.g., show a notification or alert
-      alert("Signup failed. Please try again.");
+      setLoading(false);
+      console.error("Signup failed:", error.message);
+      setError(error.message || "Signup failed. Please try again.");
+      //alert("Signup failed. Please try again.");
       return;
     }
   };
 
   return (
     <div className="signup-container">
-      <h2>Signup Page</h2>
+      <h1>Chatteron</h1>
+      {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -92,7 +102,14 @@ const Signup = () => {
           required
           name="confirmPassword"
         />
-        <button type="submit">Signup</button>
+        {loading ? (
+          <button type="submit" disabled>
+            Loading...
+          </button>
+        ) : (
+          <button type="submit">Signup</button>
+        )}
+
         <p>
           Already have an account? <a href="/login">Login</a>
         </p>

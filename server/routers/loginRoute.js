@@ -9,22 +9,22 @@ router.post("/", async (req, res) => {
 
   const { email, password } = req.body;
 
-  // Validate user input
-  if (!email || !password) {
-    return res.status(400).send("Email and password are required");
-  }
-
   try {
+    // Validate user input
+    if (!email || !password) {
+      throw new Error("Incorrect email or password");
+    }
+
     // Check if user exists
     const user = await UserModel.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(400).send("Invalid email or password");
+      throw new Error("Invalid email or password");
     }
 
     // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).send("Invalid email or password");
+      throw new Error("Incorrect password");
     }
 
     // Create JWT token
@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
       .json({ message: "Login successful", user: userData });
   } catch (error) {
     console.error("Error during login: ", error);
-    res.status(500).send("Internal Server Error");
+    res.status(400).send(error.message);
   }
 });
 
