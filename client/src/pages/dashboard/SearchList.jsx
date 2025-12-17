@@ -81,9 +81,9 @@ const SearchList = () => {
     }
   };
 
-  const handleChatButton = (user) => {
-    setDetailComponent(<Messages currentUser={currentUser} user={user} />);
-  };
+  // const handleChatButton = (user) => {
+  //   setDetailComponent(<Messages currentUser={currentUser} user={user} />);
+  // };
 
   // Show user details and chat or add contact option
 
@@ -98,7 +98,7 @@ const SearchList = () => {
       ? setDetailComponent(
           <div>
             <User user={user} />
-            <button onClick={() => handleChatButton(user)}>Chat</button>
+            {/* <button onClick={() => handleChatButton(user)}>Chat</button> */}
           </div>
         )
       : setDetailComponent(

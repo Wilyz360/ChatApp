@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useOutletContext, useNavigate, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Messages from "./Messages";
 import API from "../../api/api";
@@ -20,17 +20,27 @@ const Chats = () => {
   };
 
   const fetchChats = async () => {
+    // Fetch list of chats for the current user
+    setLoading(true);
     try {
       const response = await API.get(`/chats/${currentUser._id}`, {
         withCredentials: true,
       });
-      if (response.status === 200) {
-        console.log("Chats fetched successfully:", response.data);
-        setResults(response.data);
+      if (response.status !== 200) {
+        throw new Error(response?.data || "Failed to fetch chats");
       }
+
+      console.log("Chats fetched successfully:", response.data);
+      setResults(response.data);
+      setLoading(false);
     } catch (error) {
-      console.error("Error fetching chats:", error);
-      setError("Failed to fetch chats.");
+      setLoading(false);
+      console.error(
+        error?.response?.data || "An error occurred while fetching chats"
+      );
+      setError(
+        error?.response?.data || "An error occurred while fetching chats"
+      );
     }
   };
 
@@ -38,7 +48,6 @@ const Chats = () => {
     const fetchData = async () => {
       setLoading(true);
       await fetchChats();
-      setLoading(false);
     };
 
     fetchData();
@@ -46,7 +55,7 @@ const Chats = () => {
 
   const handleShowMessages = (chat) => {
     console.log("Selected chat ID:", chat);
-    setDetailComponent(<Messages currentUser={currentUser} chatInfo={chat} />);
+    setDetailComponent(<Messages chat={chat} />);
   };
 
   return (
@@ -59,10 +68,7 @@ const Chats = () => {
       </div>
       <ul className="list-list">
         {loading && !error && <p>Loading chats...</p>}
-        {error && !loading && <p style={{ color: "red" }}>{error}</p>}
-        {!loading && !error && results.length === 0 && (
-          <p>No chats found. Start a new chat!</p>
-        )}
+        {error && <p style={{ color: "red" }}>{error}</p>}
         {!loading &&
           !error &&
           results.map((chat) => (

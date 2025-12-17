@@ -12,7 +12,6 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
   const [requests, setRequests] = useState(initialRequests || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const fromList = false;
 
   useEffect(() => {
     setRequests(initialRequests || []);
@@ -23,10 +22,10 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
       <div>
         <User user={request} />
         <div>
-          <button onClick={() => handleAccept(request)}>
+          <button onClick={() => handleAccept(request, false)}>
             {loading ? "Accepting" : "Accept"}
           </button>{" "}
-          <button onClick={() => handleReject(request)}>
+          <button onClick={() => handleReject(request, false)}>
             {loading ? "Rejecting" : "Reject"}
           </button>
           {error && <p style={{ color: "red" }}>{error}</p>}
@@ -38,17 +37,39 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
   const handleAccept = async (request, fromList = false) => {
     console.log("Accepting request:", request._id);
     setLoading(true);
+    setError(null);
     try {
+      // Send accept request to server
       const response = await API.post("/user/request/respond", {
         userId: currentUser._id,
         requestId: request._id,
         action: "accept",
       });
 
+      // Check for successful response
       if (response.status !== 200) {
+        console.log("Error:", response.data);
         throw new Error(response?.data || "Failed to accept friend request.");
       }
-      console.log("Response data:", response.data);
+      console.log("Request message:", response.data.message);
+
+      // Create a new chat upon accepting the friend request
+      const newChatCreated = await API.post(
+        "/chats/create",
+        {
+          senderId: currentUser._id,
+          receiverId: request._id,
+        },
+        { withCredentials: true }
+      );
+
+      // Check for successful chat creation
+      if (newChatCreated.status !== 200) {
+        console.log("New chat creation failed:", newChatCreated.data);
+        throw new Error(newChatCreated?.data || "Failed to create new chat.");
+      }
+      console.log("New chat created:", newChatCreated.data.message);
+
       const updatedUser = response.data.user;
       dispatch({ type: "auth/setUser", payload: updatedUser }); // update redux store
       setLoading(false);
@@ -58,24 +79,23 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
             <>
               <User user={updatedUser} User />{" "}
               <div>
-                <button onClick={() => handleChatButton(request)}>Chat</button>
+                {/* <button onClick={() => handleChatButton(request)}>Chat</button> */}
               </div>
             </>
           );
-      console.log("Friend request accepted:", response.data.message);
     } catch (error) {
-      console.error(
-        "Error accepting friend request:",
-        error?.response?.data || "An error occurred while accepting."
-      );
       setLoading(false);
+      console.log(
+        "Error accepting friend request:",
+        error.response?.data || "An error occurred while accepting."
+      );
       setError(error?.response?.data || "An error occurred while accepting.");
     }
   };
 
-  const handleChatButton = (request) => {
-    setDetailComponent(<Messages currentUser={currentUser} user={request} />);
-  };
+  // const handleChatButton = (request) => {
+  //   setDetailComponent(<Messages currentUser={currentUser} user={request} />);
+  // };
 
   const handleReject = async (request, fromList = false) => {
     console.log("Rejecting request:", request);
@@ -129,10 +149,10 @@ function ShowRequests({ requests: initialRequests, setDetailComponent }) {
                   {req.lastName.charAt(0).toUpperCase() + req.lastName.slice(1)}
                 </div>
                 <div>
-                  <button onClick={() => handleAccept(req, !fromList)}>
+                  <button onClick={() => handleAccept(req, true)}>
                     {loading ? "Accepting" : "Accept"}
                   </button>{" "}
-                  <button onClick={() => handleReject(req, !fromList)}>
+                  <button onClick={() => handleReject(req, true)}>
                     {loading ? "Rejecting" : "Reject"}
                   </button>
                   {error && <p style={{ color: "red" }}>{error}</p>}

@@ -11,15 +11,34 @@ router.get("/:chatId", async (req, res) => {
       "senderId",
       "firstName lastName"
     );
-    res.status(200).json(messages);
+
+    if (!messages) {
+      console.log("No messages found for chatId:", chatId);
+      throw new Error("No messages found for this chat");
+    }
+
+    console.log("Messages fetched for chatId:", chatId, messages);
+    res
+      .status(200)
+      .json({ messages, message: "Messages fetched successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).send(error.message);
   }
 });
 // create a new message
 router.post("/", async (req, res) => {
   try {
     const { chatId, senderId, text } = req.body;
+
+    if (!chatId || !senderId || !text) {
+      throw new Error("chatId, senderId and text are required");
+    }
+
+    const findChat = await ChatModel.findById(chatId);
+    if (!findChat) {
+      throw new Error("Chat not found");
+    }
+
     const message = new MsgModel({
       chatId,
       senderId,
@@ -33,9 +52,9 @@ router.post("/", async (req, res) => {
       "senderId",
       "firstName lastName"
     );
-    res.status(201).json(populatedMessage);
+    res.status(200).json({ message: populatedMessage });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
 

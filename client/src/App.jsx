@@ -7,7 +7,6 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SearchList from "./pages/dashboard/SearchList";
 import Chats from "./pages/dashboard/Chats";
-import Messages from "./pages/dashboard/Messages";
 import Contacts from "./pages/dashboard/Contacts";
 import Settings from "./pages/dashboard/Settings";
 

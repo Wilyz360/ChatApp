@@ -10,15 +10,27 @@ router.get("/:userId", async (req, res) => {
       "members",
       "firstName lastName"
     );
+    if (!chats) {
+      console.log("No chats found for user:", userId);
+      throw new Error("Some error occurred while fetching chats");
+    }
+
+    if (chats.length === 0) {
+      console.log("No chats exist for user:", userId);
+      throw new Error("No chats found for this user");
+    }
+
+    console.log(`Chats found for user ${userId}:`, chats);
 
     res.status(200).json(chats);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
 
 // create a new chat
-router.post("/", async (req, res) => {
+router.post("/create", async (req, res) => {
+  console.log("Creating chat with data:", req.body);
   try {
     const { senderId, receiverId } = req.body;
     // check if chat already exists
@@ -26,53 +38,55 @@ router.post("/", async (req, res) => {
       members: { $all: [senderId, receiverId] },
     });
     if (chat) {
-      return res.status(200).json(chat);
+      console.log("Chat already exists between users:", senderId, receiverId);
+      throw new Error("Chat already exists between these users");
     }
     chat = new Chat({
       members: [senderId, receiverId],
     });
     await chat.save();
     chat = await chat.populate("members", "firstName lastName");
-    res.status(201).json(chat);
+    res.status(200).json({ chat, message: "Chat created successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
 
 // firnd chat between two users
 router.get("/find/:firstUserId/:secondUserId", async (req, res) => {
   console.log("Finding chat between users:", req.params);
-  if (!req.params.firstUserId || !req.params.secondUserId) {
-    return res.status(400).json({ message: "Both user IDs must be provided" });
-  }
-  if (req.params.firstUserId === req.params.secondUserId) {
-    return res
-      .status(400)
-      .json({ message: "Cannot find chat with the same user ID" });
-  }
   try {
+    if (!req.params.firstUserId || !req.params.secondUserId) {
+      throw new Error("Both user IDs must be provided");
+    }
+
+    if (req.params.firstUserId === req.params.secondUserId) {
+      throw new Error("Cannot find chat with the same user ID");
+    }
+
     const { firstUserId, secondUserId } = req.params;
+
     console.log(
       `Searching for chat between ${firstUserId} and ${secondUserId}`
     );
+
     const chat = await Chat.findOne({
       members: { $all: [firstUserId, secondUserId] },
     }).populate("members", "firstName lastName");
+
     if (!chat) {
       console.log(
         `No chat found between users ${firstUserId} and ${secondUserId}`
       );
-      return res
-        .status()
-        .json({ message: "No chat found between the two users" }); // Return false if no chat found
+      throw new Error("No chat found between the specified users");
     }
     console.log(
       `Chat found between users ${firstUserId} and ${secondUserId}:`,
       chat
     );
-    res.status(200).json(chat);
+    res.status(200).json({ chat: chat, message: "Chat fetched successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).send(error.message);
   }
 });
 

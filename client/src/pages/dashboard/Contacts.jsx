@@ -12,8 +12,11 @@ const Contacts = () => {
   const currentUser = useSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [chatError, setChatError] = useState(null);
   const [contactList, setContactList] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [chat, setChat] = useState(null);
 
   // Fetch contacts from the server
   const fetchContacts = async () => {
@@ -79,8 +82,38 @@ const Contacts = () => {
   }, []);
 
   // Handle initiating chat with selected user
-  const handleChatButton = (user) => {
-    setDetailComponent(<Messages currentUser={currentUser} user={user} />);
+  const handleChatButton = async (user) => {
+    setLoadingChat(true);
+    try {
+      const response = await API.get(
+        `/chats/find/${currentUser._id}/${user._id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.status !== 200) {
+        console.error(
+          "Error fetching chat:",
+          response?.data || "Failed to fetch chat"
+        );
+        throw new Error(response?.data || "Failed to fetch chats");
+      }
+
+      console.log("Chats fetched successfully:", response.data.message);
+      setChat(response.data.chat);
+      setDetailComponent(
+        <Messages currentUser={currentUser} chat={response.data.chat} />
+      );
+      setLoadingChat(false);
+    } catch (error) {
+      setLoadingChat(false);
+      console.error(
+        error?.response?.data || "An error occurred while fetching chats"
+      );
+      setChatError(
+        error?.response?.data || "An error occurred while fetching chats"
+      );
+    }
   };
 
   // Show user details and chat option
@@ -88,7 +121,10 @@ const Contacts = () => {
     setDetailComponent(
       <div>
         <User user={user} setDetailComponent={setDetailComponent} />
-        <button onClick={() => handleChatButton(user)}>Chat</button>
+        <button onClick={() => handleChatButton(user)}>
+          {loadingChat ? "working..." : "chat"}
+        </button>
+        {chatError && <p style={{ color: "red" }}>{chatError}</p>}
       </div>
     );
   };
