@@ -24,7 +24,9 @@ const Login = () => {
       }
 
       console.log("Login successful:", response.data.message);
-      dispatch(loginSuccess(response.data.user));
+      dispatch(loginSuccess(response.data.user)); // Dispatch success action with user data
+
+      // Clear input fields
       setEmail("");
       setPassword("");
 

@@ -5,17 +5,20 @@ import API from "../../api/api";
 import User from "./User";
 import Messages from "./Messages";
 import ShowRequests from "../../components/ShowRequests";
+import { useSocket } from "../../socket/SocketProvider";
 import "../../styles/list.css"; // Assuming you have a CSS file for styling
 
 const Contacts = () => {
   const { setDetailComponent } = useOutletContext();
   const currentUser = useSelector((state) => state.auth.user);
+  const socket = useSocket();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loadingChat, setLoadingChat] = useState(false);
   const [chatError, setChatError] = useState(null);
   const [contactList, setContactList] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
 
   // Fetch contacts from the server
   const fetchContacts = async () => {
@@ -79,6 +82,37 @@ const Contacts = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // Request the list of online users from the server
+    socket.emit("get-online-users");
+
+    // Listen for the list of online users from the server
+    socket.on("online-users", (onlineUserIds) => {
+      setOnlineUsers(new Set(onlineUserIds));
+    });
+
+    // Listen for user status changes
+    socket.on("user-status-change", ({ userId, status }) => {
+      setOnlineUsers((prevOnlineUsers) => {
+        const updatedOnlineUsers = new Set(prevOnlineUsers);
+        if (status === "online") {
+          updatedOnlineUsers.add(userId);
+        } else if (status === "offline") {
+          updatedOnlineUsers.delete(userId);
+        }
+        return updatedOnlineUsers;
+      });
+    });
+
+    // Cleanup listeners on unmount
+    return () => {
+      socket.off("online-users");
+      socket.off("user-status-change");
+    };
+  }, [socket]);
 
   // Handle initiating chat with selected user
   const handleChatButton = async (user) => {
@@ -156,23 +190,28 @@ const Contacts = () => {
           )}
           {!loading &&
             !error &&
-            contactList.map((contact) => (
-              <li
-                onClick={() => handleShowUser(contact)}
-                key={contact._id}
-                style={{ marginBottom: "10px" }}
-                className="list-item"
-              >
-                <div className="list-name">
-                  <strong>
-                    {contact.firstName.charAt(0).toUpperCase() +
-                      contact.firstName.slice(1)}{" "}
-                    {contact.lastName.charAt(0).toUpperCase() +
-                      contact.lastName.slice(1)}
-                  </strong>
-                </div>
-              </li>
-            ))}
+            contactList.map((contact) => {
+              const isOnline = onlineUsers.has(contact._id);
+
+              return (
+                <li
+                  onClick={() => handleShowUser(contact)}
+                  key={contact._id}
+                  style={{ marginBottom: "10px" }}
+                  className="list-item"
+                >
+                  <div className="list-name">
+                    <span>{isOnline ? "online" : "offline"}</span>
+                    <strong>
+                      {contact.firstName.charAt(0).toUpperCase() +
+                        contact.firstName.slice(1)}{" "}
+                      {contact.lastName.charAt(0).toUpperCase() +
+                        contact.lastName.slice(1)}
+                    </strong>
+                  </div>
+                </li>
+              );
+            })}
         </ul>
       </div>
     </div>

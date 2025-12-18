@@ -6,7 +6,7 @@ const SocketContext = createContext(); // Create a context for socket
 const SOCKET_URL = "http://localhost:4000";
 
 export const SocketProvider = ({ children }) => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const [socket, setSocket] = useState(null);
 
   console.log("SocketProvider rendered, isAuthenticated:", isAuthenticated);
@@ -21,6 +21,8 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on("connect", () => {
         console.log("Connected to server with ID:", newSocket.id);
+
+        newSocket.emit("online", user._id);
       });
 
       return () => {
@@ -28,7 +30,7 @@ export const SocketProvider = ({ children }) => {
         console.log("Socket disconnected");
       };
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]); // Re-run effect when authentication status or user changes
   return (
     // Provide socket instance to children components
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
